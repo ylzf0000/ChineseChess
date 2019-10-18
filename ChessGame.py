@@ -16,7 +16,7 @@ class ChessGame:
 
     def callback(self, event):
         print(event.x, event.y)
-        rx, ry = Global.coord_board2real(event.x), Global.coord_board2real(event.y)
+        rx, ry = Global.coord_real2board(event.x), Global.coord_real2board(event.y)
         if self.board.select(rx, ry, self.player_is_red):
             self.player_is_red = not self.player_is_red
             self.view.showMsg("Red" if self.player_is_red else "Green")

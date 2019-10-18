@@ -9,8 +9,8 @@ class ChessPiece:
 
     def get_move_locs(self, board):
         moves = []
-        for x in xrange(9):
-            for y in xrange(10):
+        for x in range(9):
+            for y in range(10):
                 if (x, y) in board.pieces and board.pieces[x, y].is_red == self.is_red:
                     continue
                 if self.can_move(board, x - self.x, y - self.y):

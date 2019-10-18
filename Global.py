@@ -6,13 +6,14 @@ cur_path = os.path.abspath('.')
 image_path = 'images/IMAGES_X/'
 image_chess_path = 'images/IMAGES_X/COMIC/'
 
+
 # 全局函数
-def coord_board2real(x):
+def coord_real2board(x):
     if x <= 40:
         return 0
     else:
-        return (x - 40) / 72 + 1
+        return round((x - 40) / 73)
 
 
-def coord_real2board(x):
-    return 40 + 72 * x
+def coord_board2real(x):
+    return 40 + 73 * x

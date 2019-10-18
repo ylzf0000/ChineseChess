@@ -74,7 +74,7 @@ class ChessBoard:
             if (x, y) in self.pieces and self.pieces[x, y].is_red == player_is_red:
                 self.pieces[x, y].selected = True
                 self.selected_piece = self.pieces[x, y]
-            return False
+            return True
 
         if not (x, y) in self.pieces:
             if self.selected_piece:
