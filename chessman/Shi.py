@@ -1,4 +1,4 @@
-import ExpDef
+import Global
 
 __author__ = 'Zhaoliang'
 from ChessPiece import ChessPiece
@@ -9,14 +9,14 @@ class Shi(ChessPiece):
     def get_image_file_name(self):
         if self.selected:
             if self.is_red:
-                return ExpDef.image_chess_path + "RAS.GIF"
+                return Global.image_chess_path + "RAS.GIF"
             else:
-                return ExpDef.image_chess_path + "BAS.GIF"
+                return Global.image_chess_path + "BAS.GIF"
         else:
             if self.is_red:
-                return ExpDef.image_chess_path + "RA.GIF"
+                return Global.image_chess_path + "RA.GIF"
             else:
-                return ExpDef.image_chess_path + "BA.GIF"
+                return Global.image_chess_path + "BA.GIF"
 
     def can_move(self, board, dx, dy):
         nx, ny = self.x + dx, self.y + dy

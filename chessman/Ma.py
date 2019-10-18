@@ -1,4 +1,4 @@
-import ExpDef
+import Global
 from ChessPiece import ChessPiece
 
 
@@ -7,14 +7,14 @@ class Ma(ChessPiece):
     def get_image_file_name(self):
         if self.selected:
             if self.is_red:
-                return ExpDef.image_chess_path + "RNS.GIF"
+                return Global.image_chess_path + "RNS.GIF"
             else:
-                return ExpDef.image_chess_path + "BNS.GIF"
+                return Global.image_chess_path + "BNS.GIF"
         else:
             if self.is_red:
-                return ExpDef.image_chess_path + "RN.GIF"
+                return Global.image_chess_path + "RN.GIF"
             else:
-                return ExpDef.image_chess_path + "BN.GIF"
+                return Global.image_chess_path + "BN.GIF"
 
     def can_move(self, board, dx, dy):
         x, y = self.x, self.y

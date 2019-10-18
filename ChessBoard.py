@@ -1,10 +1,10 @@
 from chessman.Bing import *
-from chessman.Shuai import *
+from chessman.Che import *
+from chessman.Ma import *
 from chessman.Pao import *
 from chessman.Shi import *
+from chessman.Shuai import *
 from chessman.Xiang import *
-from chessman.Ma import *
-from chessman.Che import *
 
 
 class ChessBoard:
@@ -17,22 +17,20 @@ class ChessBoard:
     pieces[6, 3] = Bing(6, 3, False)
     pieces[8, 3] = Bing(8, 3, False)
 
-    pieces[1,2] = Pao(1, 2, False)
-    pieces[7,2] = Pao(7, 2, False)
+    pieces[1, 2] = Pao(1, 2, False)
+    pieces[7, 2] = Pao(7, 2, False)
 
-    pieces[3,0] = Shi(3, 0, False)
-    pieces[5,0] = Shi(5, 0, False)
+    pieces[3, 0] = Shi(3, 0, False)
+    pieces[5, 0] = Shi(5, 0, False)
 
-    pieces[2,0] = Xiang(2, 0, False)
-    pieces[6,0] = Xiang(6, 0, False)
+    pieces[2, 0] = Xiang(2, 0, False)
+    pieces[6, 0] = Xiang(6, 0, False)
 
     pieces[1, 0] = Ma(1, 0, False)
     pieces[7, 0] = Ma(7, 0, False)
 
     pieces[0, 0] = Che(0, 0, False)
     pieces[8, 0] = Che(8, 0, False)
-
-
 
     pieces[4, 9] = Shuai(4, 9, True)
 
@@ -42,14 +40,14 @@ class ChessBoard:
     pieces[6, 6] = Bing(6, 6, True)
     pieces[8, 6] = Bing(8, 6, True)
 
-    pieces[1,7] = Pao(1, 7, True)
-    pieces[7,7] = Pao(7, 7, True)
+    pieces[1, 7] = Pao(1, 7, True)
+    pieces[7, 7] = Pao(7, 7, True)
 
-    pieces[3,9] = Shi(3, 9, True)
-    pieces[5,9] = Shi(5, 9, True)
+    pieces[3, 9] = Shi(3, 9, True)
+    pieces[5, 9] = Shi(5, 9, True)
 
-    pieces[2,9] = Xiang(2, 9, True)
-    pieces[6,9] = Xiang(6, 9, True)
+    pieces[2, 9] = Xiang(2, 9, True)
+    pieces[6, 9] = Xiang(6, 9, True)
 
     pieces[1, 9] = Ma(1, 9, True)
     pieces[7, 9] = Ma(7, 9, True)
@@ -81,9 +79,9 @@ class ChessBoard:
         if not (x, y) in self.pieces:
             if self.selected_piece:
                 ox, oy = self.selected_piece.x, self.selected_piece.y
-                if self.can_move(ox, oy, x-ox, y-oy):
-                    self.move(ox, oy, x-ox, y-oy)
-                    self.pieces[x,y].selected = False
+                if self.can_move(ox, oy, x - ox, y - oy):
+                    self.move(ox, oy, x - ox, y - oy)
+                    self.pieces[x, y].selected = False
                     self.selected_piece = None
                     return True
             return False
@@ -93,14 +91,14 @@ class ChessBoard:
 
         if self.pieces[x, y].is_red != player_is_red:
             ox, oy = self.selected_piece.x, self.selected_piece.y
-            if self.can_move(ox, oy, x-ox, y-oy):
-                self.move(ox, oy, x-ox, y-oy)
-                self.pieces[x,y].selected = False
+            if self.can_move(ox, oy, x - ox, y - oy):
+                self.move(ox, oy, x - ox, y - oy)
+                self.pieces[x, y].selected = False
                 self.selected_piece = None
                 return True
             return False
         for key in self.pieces.keys():
             self.pieces[key].selected = False
         self.pieces[x, y].selected = True
-        self.selected_piece = self.pieces[x,y]
+        self.selected_piece = self.pieces[x, y]
         return False

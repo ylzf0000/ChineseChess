@@ -1,4 +1,4 @@
-import ExpDef
+import Global
 from ChessPiece import ChessPiece
 
 
@@ -8,14 +8,14 @@ class Shuai(ChessPiece):
     def get_image_file_name(self):
         if self.selected:
             if self.is_red:
-                return ExpDef.image_chess_path + "RKS.GIF"
+                return Global.image_chess_path + "RKS.GIF"
             else:
-                return ExpDef.image_chess_path + "BKS.GIF"
+                return Global.image_chess_path + "BKS.GIF"
         else:
             if self.is_red:
-                return ExpDef.image_chess_path + "RK.GIF"
+                return Global.image_chess_path + "RK.GIF"
             else:
-                return ExpDef.image_chess_path + "BK.GIF"
+                return Global.image_chess_path + "BK.GIF"
 
     def can_move(self, board, dx, dy):
         print('king')

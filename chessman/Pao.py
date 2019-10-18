@@ -1,4 +1,4 @@
-import ExpDef
+import Global
 from ChessPiece import ChessPiece
 
 
@@ -7,14 +7,14 @@ class Pao(ChessPiece):
     def get_image_file_name(self):
         if self.selected:
             if self.is_red:
-                return ExpDef.image_chess_path + "RCS.GIF"
+                return Global.image_chess_path + "RCS.GIF"
             else:
-                return ExpDef.image_chess_path + "BCS.GIF"
+                return Global.image_chess_path + "BCS.GIF"
         else:
             if self.is_red:
-                return ExpDef.image_chess_path + "RC.GIF"
+                return Global.image_chess_path + "RC.GIF"
             else:
-                return ExpDef.image_chess_path + "BC.GIF"
+                return Global.image_chess_path + "BC.GIF"
 
     def can_move(self, board, dx, dy):
         if dx != 0 and dy != 0:
