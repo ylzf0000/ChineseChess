@@ -3,20 +3,20 @@ from ChessView import ChessView
 
 
 def real_coord(x):
-    if x <= 50:
+    if x <= 40:
         return 0
     else:
-        return (x-50)/40 + 1
+        return (x - 40) / 72 + 1
 
 
 def board_coord(x):
-    return 30 + 40*x
+    return 40 + 72 * x
 
 
 class ChessGame:
-
     board = ChessBoard()
     player_is_red = True
+
     def __init__(self):
         self.view = ChessView(self)
         self.view.showMsg("Red")
@@ -32,6 +32,7 @@ class ChessGame:
             self.player_is_red = not self.player_is_red
             self.view.showMsg("Red" if self.player_is_red else "Green")
         self.view.draw_board(self.board)
+
 
 game = ChessGame()
 game.start()

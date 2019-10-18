@@ -1,21 +1,24 @@
 import tkinter
-import os
+from PIL import Image, ImageTk
 import ExpDef
 
+
 def board_coord(x):
-    return 30 + 40*x
+    return 40 + 72 * x
 
 
 class ChessView:
     root = tkinter.Tk()
-    root.title("Chinese Chess")
+    root.title("中国象棋")
     root.resizable(0, 0)
-    can = tkinter.Canvas(root, width=800, height=600)
+    img = ImageTk.PhotoImage(Image.open(ExpDef.image_path + "WOOD.JPG"))
+    can = tkinter.Canvas(root, width=img.width(), height=img.height())
     can.pack(expand=tkinter.YES, fill=tkinter.BOTH)
-    img = tkinter.PhotoImage(file="images/WHITE.GIF")
+    # img = tkinter.PhotoImage(file=ExpDef.image_path + "WOOD.GIF")
     can.create_image(0, 0, image=img, anchor=tkinter.NW)
     piece_images = dict()
     move_images = []
+
     def draw_board(self, board):
         self.piece_images.clear()
         self.move_images = []
@@ -27,8 +30,10 @@ class ChessView:
             for (x, y) in board.selected_piece.get_move_locs(board):
                 self.move_images.append(tkinter.PhotoImage(file="images/OOS.GIF"))
                 self.can.create_image(board_coord(x), board_coord(y), image=self.move_images[-1])
+
     def showMsg(self, msg):
         self.root.title(msg)
+
     def __init__(self, control):
         self.control = control
         self.can.bind('<Button-1>', self.control.callback)

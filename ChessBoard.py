@@ -9,53 +9,53 @@ from chessman.Che import *
 
 class ChessBoard:
     pieces = dict()
-    pieces[4, 0] = Shuai(4, 0, True)
+    pieces[4, 0] = Shuai(4, 0, False)
 
-    pieces[0, 3] = Bing(0, 3, True)
-    pieces[2, 3] = Bing(2, 3, True)
-    pieces[4, 3] = Bing(4, 3, True)
-    pieces[6, 3] = Bing(6, 3, True)
-    pieces[8, 3] = Bing(8, 3, True)
+    pieces[0, 3] = Bing(0, 3, False)
+    pieces[2, 3] = Bing(2, 3, False)
+    pieces[4, 3] = Bing(4, 3, False)
+    pieces[6, 3] = Bing(6, 3, False)
+    pieces[8, 3] = Bing(8, 3, False)
 
-    pieces[1,2] = Pao(1, 2, True)
-    pieces[7,2] = Pao(7, 2, True)
+    pieces[1,2] = Pao(1, 2, False)
+    pieces[7,2] = Pao(7, 2, False)
 
-    pieces[3,0] = Shi(3, 0, True)
-    pieces[5,0] = Shi(5, 0, True)
+    pieces[3,0] = Shi(3, 0, False)
+    pieces[5,0] = Shi(5, 0, False)
 
-    pieces[2,0] = Xiang(2, 0, True)
-    pieces[6,0] = Xiang(6, 0, True)
+    pieces[2,0] = Xiang(2, 0, False)
+    pieces[6,0] = Xiang(6, 0, False)
 
-    pieces[1, 0] = Ma(1, 0, True)
-    pieces[7, 0] = Ma(7, 0, True)
+    pieces[1, 0] = Ma(1, 0, False)
+    pieces[7, 0] = Ma(7, 0, False)
 
-    pieces[0, 0] = Che(0, 0, True)
-    pieces[8, 0] = Che(8, 0, True)
+    pieces[0, 0] = Che(0, 0, False)
+    pieces[8, 0] = Che(8, 0, False)
 
 
 
-    pieces[4, 9] = Shuai(4, 9, False)
+    pieces[4, 9] = Shuai(4, 9, True)
 
-    pieces[0, 6] = Bing(0, 6, False)
-    pieces[2, 6] = Bing(2, 6, False)
-    pieces[4, 6] = Bing(4, 6, False)
-    pieces[6, 6] = Bing(6, 6, False)
-    pieces[8, 6] = Bing(8, 6, False)
+    pieces[0, 6] = Bing(0, 6, True)
+    pieces[2, 6] = Bing(2, 6, True)
+    pieces[4, 6] = Bing(4, 6, True)
+    pieces[6, 6] = Bing(6, 6, True)
+    pieces[8, 6] = Bing(8, 6, True)
 
-    pieces[1,7] = Pao(1, 7, False)
-    pieces[7,7] = Pao(7, 7, False)
+    pieces[1,7] = Pao(1, 7, True)
+    pieces[7,7] = Pao(7, 7, True)
 
-    pieces[3,9] = Shi(3, 9, False)
-    pieces[5,9] = Shi(5, 9, False)
+    pieces[3,9] = Shi(3, 9, True)
+    pieces[5,9] = Shi(5, 9, True)
 
-    pieces[2,9] = Xiang(2, 9, False)
-    pieces[6,9] = Xiang(6, 9, False)
+    pieces[2,9] = Xiang(2, 9, True)
+    pieces[6,9] = Xiang(6, 9, True)
 
-    pieces[1, 9] = Ma(1, 9, False)
-    pieces[7, 9] = Ma(7, 9, False)
+    pieces[1, 9] = Ma(1, 9, True)
+    pieces[7, 9] = Ma(7, 9, True)
 
-    pieces[0, 9] = Che(0, 9, False)
-    pieces[8, 9] = Che(8, 9, False)
+    pieces[0, 9] = Che(0, 9, True)
+    pieces[8, 9] = Che(8, 9, True)
 
     selected_piece = None
 

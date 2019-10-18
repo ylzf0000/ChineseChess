@@ -1,20 +1,20 @@
 from ChessPiece import ChessPiece
 import sys
-
+import ExpDef
 
 class Bing(ChessPiece):
 
     def get_image_file_name(self):
         if self.selected:
             if self.is_red:
-                return "images/RPS.GIF"
+                return ExpDef.image_chess_path + "RPS.GIF"
             else:
-                return "images/BPS.GIF"
+                return ExpDef.image_chess_path + "BPS.GIF"
         else:
             if self.is_red:
-                return "images/RP.GIF"
+                return ExpDef.image_chess_path + "RP.GIF"
             else:
-                return "images/BP.GIF"
+                return ExpDef.image_chess_path + "BP.GIF"
 
     def can_move(self, board, dx, dy):
         if abs(dx) + abs(dy) != 1:
