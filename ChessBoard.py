@@ -1,5 +1,5 @@
 from chessman.Bing import *
-from chessman.Che import *
+from chessman.Ju import *
 from chessman.Ma import *
 from chessman.Pao import *
 from chessman.Shi import *
@@ -29,8 +29,8 @@ class ChessBoard:
     pieces[1, 0] = Ma(1, 0, False)
     pieces[7, 0] = Ma(7, 0, False)
 
-    pieces[0, 0] = Che(0, 0, False)
-    pieces[8, 0] = Che(8, 0, False)
+    pieces[0, 0] = Ju(0, 0, False)
+    pieces[8, 0] = Ju(8, 0, False)
 
     pieces[4, 9] = Shuai(4, 9, True)
 
@@ -52,8 +52,8 @@ class ChessBoard:
     pieces[1, 9] = Ma(1, 9, True)
     pieces[7, 9] = Ma(7, 9, True)
 
-    pieces[0, 9] = Che(0, 9, True)
-    pieces[8, 9] = Che(8, 9, True)
+    pieces[0, 9] = Ju(0, 9, True)
+    pieces[8, 9] = Ju(8, 9, True)
 
     selected_piece = None
 

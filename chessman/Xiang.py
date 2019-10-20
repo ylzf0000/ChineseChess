@@ -19,7 +19,7 @@ class Xiang(ChessPiece):
     def can_move(self, board, dx, dy):
         x, y = self.x, self.y
         nx, ny = x + dx, y + dy
-        if (self.is_red and ny > 4) or (self.is_red == False and ny < 5):
+        if (self.is_red and ny <5) or (not self.is_red and ny > 4):
             # print 'no river cross'
             return False
 

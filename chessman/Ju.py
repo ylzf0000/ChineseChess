@@ -2,7 +2,7 @@ import Global
 from ChessPiece import ChessPiece
 
 
-class Che(ChessPiece):
+class Ju(ChessPiece):
 
     def get_image_file_name(self):
         if self.selected:

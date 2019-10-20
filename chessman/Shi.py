@@ -21,15 +21,15 @@ class Shi(ChessPiece):
     def can_move(self, board, dx, dy):
         nx, ny = self.x + dx, self.y + dy
         x, y = self.x, self.y
-        if not (self.is_red and 3 <= nx <= 5 and 0 <= ny <= 2) and \
-                not (self.is_red == False and 3 <= nx <= 5 and 7 <= ny <= 9):
+        if not (not self.is_red and 3 <= nx <= 5 and 0 <= ny <= 2) and \
+                not (self.is_red and 3 <= nx <= 5 and 7 <= ny <= 9):
             # print 'out of castle'
             return False
-        if self.is_red and (nx, ny) == (4, 1) or (x, y) == (4, 1):
+        if not self.is_red and (nx, ny) == (4, 1) or (x, y) == (4, 1):
             if abs(dx) > 1 or abs(dy) > 1:
                 # print 'too far'
                 return False
-        elif self.is_red == False and (nx, ny) == (4, 8) or (x, y) == (4, 8):
+        elif self.is_red and (nx, ny) == (4, 8) or (x, y) == (4, 8):
             if abs(dx) > 1 or abs(dy) > 1:
                 # print 'too far'
                 return False
