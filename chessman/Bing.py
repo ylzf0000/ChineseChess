@@ -22,11 +22,11 @@ class Bing(ChessPiece):
         if abs(dx) + abs(dy) != 1:
             # print 'Too far'
             return False
-        if (self.is_red and dy == -1) or (self.is_red == False and dy == 1):
+        if (self.is_red and dy == 1) or (not self.is_red and dy == -1):
             # print 'cannot go back'
             return False
         if dy == 0:
-            if (self.is_red and self.y < 5) or (self.is_red == False and self.y >= 5):
+            if (self.is_red and self.y >= 5) or (not self.is_red and self.y < 5):
                 # print 'behind river'
                 return False
         nx, ny = self.x + dx, self.y + dy

@@ -23,8 +23,8 @@ class Shuai(ChessPiece):
         if dx == 0 and self.count_pieces(board, self.x, self.y, dx, dy) == 0 and ((nx, ny) in board.pieces) and \
                 board.pieces[nx, ny].is_king:
             return True
-        if not (self.is_red and 3 <= nx <= 5 and 0 <= ny <= 2) and not (
-                self.is_red == False and 3 <= nx <= 5 and 7 <= ny <= 9):
+        if not (not self.is_red and 3 <= nx <= 5 and 0 <= ny <= 2) and not (
+                self.is_red and 3 <= nx <= 5 and 7 <= ny <= 9):
             print('out of castle')
             return False
         if abs(dx) + abs(dy) != 1:
