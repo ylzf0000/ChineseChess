@@ -26,7 +26,7 @@ class ChessView:
             self.piece_images[x, y] = tkinter.PhotoImage(file=pieces[x, y].get_image_file_name())
             self.can.create_image(Global.coord_board2real(x), Global.coord_board2real(y), image=self.piece_images[x, y])
         if board.selected_piece:
-            for (x, y) in board.selected_piece.get_move_locs(board):
+            for (x, y) in board.selected_piece.get_move_locs():
                 self.move_images.append(tkinter.PhotoImage(file=Global.image_chess_path + "OOS.GIF"))
                 self.can.create_image(Global.coord_board2real(x), Global.coord_board2real(y),
                                       image=self.move_images[-1])

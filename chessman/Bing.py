@@ -1,7 +1,7 @@
 import sys
 
 import Global
-from ChessPiece import ChessPiece
+from chessman.ChessPiece import ChessPiece
 
 
 class Bing(ChessPiece):
@@ -18,29 +18,33 @@ class Bing(ChessPiece):
             else:
                 return Global.image_chess_path + "BP.GIF"
 
-    def can_move(self, board, dx, dy):
-        if abs(dx) + abs(dy) != 1:
-            # print 'Too far'
-            return False
-        if (self.is_red and dy == 1) or (not self.is_red and dy == -1):
-            # print 'cannot go back'
-            return False
-        if dy == 0:
-            if (self.is_red and self.y >= 5) or (not self.is_red and self.y < 5):
-                # print 'behind river'
-                return False
-        nx, ny = self.x + dx, self.y + dy
-        if (nx, ny) in board.pieces:
-            if board.pieces[nx, ny].is_red == self.is_red:
-                # print 'blocked by yourself'
-                return False
+    def get_move_locs(self):
+        over_river = self.y <= 4 if self.is_red else self.y >= 5
+        if not over_river:
+            x = self.x
+            y = self.y - 1 if self.is_red else self.y + 1
+            if (x, y) in self.board.pieces:
+                return []
             else:
-                pass
-                # print 'kill a chessman'
-        return True
+                return [(x, y)]
+        else:
+            dx = (-1, 0, 1)
+            dy = (0, -1 if self.is_red else 1, 0)
+            moves = []
+            for i in range(3):
+                x = self.x + dx
+                y = self.y + dy
+                if self.board.is_pos_legal(x, y) and \
+                        ((not (x, y) in self.board.pieces) or
+                         (self.board.pieces[x, y].is_red != self.is_red)):
+                    moves.append((x, y))
+            return moves
 
-    def __init__(self, x, y, is_red):
-        ChessPiece.__init__(self, x, y, is_red)
+    def can_move(self, board, dx, dy):
+        return (self.x + dx, self.y + dy) in self.get_move_locs()
+
+    def __init__(self, x, y, is_red, board):
+        ChessPiece.__init__(self, x, y, is_red, board)
 
     def display(self):
         sys.stdout.write('B')

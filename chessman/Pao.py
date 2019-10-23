@@ -1,5 +1,5 @@
 import Global
-from ChessPiece import ChessPiece
+from chessman.ChessPiece import ChessPiece
 
 
 class Pao(ChessPiece):
@@ -33,5 +33,5 @@ class Pao(ChessPiece):
                 return False
         return True
 
-    def __init__(self, x, y, is_red):
-        ChessPiece.__init__(self, x, y, is_red)
+    def __init__(self, x, y, is_red, board):
+        ChessPiece.__init__(self, x, y, is_red, board)

@@ -1,5 +1,5 @@
 import Global
-from ChessPiece import ChessPiece
+from chessman.ChessPiece import ChessPiece
 
 
 class Ma(ChessPiece):
@@ -16,6 +16,28 @@ class Ma(ChessPiece):
             else:
                 return Global.image_chess_path + "BN.GIF"
 
+    def get_move_locs(self):
+        moves = []
+        dx = (2, 1, -1, -2, -2, -1, 1, 2)
+        dy = (1, 2, 2, 1, -1, -2, -2, -1)
+        obstacles = ((1, 0),
+                     (0, 1),
+                     (0, 1),
+                     (-1, 0),
+                     (-1, 0),
+                     (0, -1),
+                     (0, -1),
+                     (1, 0))
+        for i in range(8):
+            x = self.x + dx[i]
+            y = self.y + dy[i]
+            if not self.board.is_pos_legal(x, y):
+                continue
+            if ((x, y) not in self.board.pieces or self.board[x, y].is_red != self.is_red) and \
+                    obstacles[i] not in self.board.pieces:
+                moves.append((x, y))
+        return moves
+
     def can_move(self, board, dx, dy):
         x, y = self.x, self.y
         nx, ny = x + dx, y + dy
@@ -30,5 +52,5 @@ class Ma(ChessPiece):
             return False
         return True
 
-    def __init__(self, x, y, is_red):
-        ChessPiece.__init__(self, x, y, is_red)
+    def __init__(self, x, y, is_red, board):
+        ChessPiece.__init__(self, x, y, is_red, board)

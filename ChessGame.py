@@ -21,7 +21,7 @@ class ChessGame:
         for p in self.board.pieces:
             pp = self.board.pieces[p]
             if  pp.is_red == is_red:
-                moves = pp.get_move_locs(self.board)
+                moves = pp.get_move_locs()
                 if moves and moves[0]:
                     self.drop(pp.x, pp.y)
                     self.drop(moves[0][0], moves[0][1])

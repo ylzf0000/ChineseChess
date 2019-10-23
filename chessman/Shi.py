@@ -1,7 +1,7 @@
 import Global
 
 __author__ = 'Zhaoliang'
-from ChessPiece import ChessPiece
+from chessman.ChessPiece import ChessPiece
 
 
 class Shi(ChessPiece):
@@ -42,5 +42,5 @@ class Shi(ChessPiece):
             return False
         return abs(dx) == 1 and abs(dy) == 1
 
-    def __init__(self, x, y, is_red):
-        ChessPiece.__init__(self, x, y, is_red)
+    def __init__(self, x, y, is_red, board):
+        ChessPiece.__init__(self, x, y, is_red, board)
