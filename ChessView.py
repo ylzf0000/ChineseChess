@@ -14,6 +14,7 @@ class ChessView:
     can.pack(expand=tkinter.YES, fill=tkinter.BOTH)
     # img = tkinter.PhotoImage(file=ExpDef.image_path + "WOOD.GIF")
     can.create_image(0, 0, image=img, anchor=tkinter.NW)
+    tkinter.Button(root,text='hehe').pack()
     piece_images = dict()
     move_images = []
 

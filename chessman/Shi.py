@@ -5,6 +5,23 @@ from ChessPiece import ChessPiece
 
 
 class Shi(ChessPiece):
+    # green_can_move_dict = dict()
+    # green_can_move_dict[3, 0] = True
+    # green_can_move_dict[5, 0] = True
+    # green_can_move_dict[4, 1] = True
+    # green_can_move_dict[3, 2] = True
+    # green_can_move_dict[5, 2] = True
+
+    green_can_move_list = ((3, 0), (5, 0), (4, 1), (3, 2), (5, 2))
+
+    # red_can_move_dict = dict()
+    # red_can_move_dict[3, 7] = True
+    # red_can_move_dict[5, 7] = True
+    # red_can_move_dict[4, 8] = True
+    # red_can_move_dict[3, 9] = True
+    # red_can_move_dict[5, 9] = True
+
+    red_can_move_list = ((3, 7), (5, 7), (4, 8), (3, 9), (5, 9))
 
     def get_image_file_name(self):
         if self.selected:
@@ -20,23 +37,10 @@ class Shi(ChessPiece):
 
     def can_move(self, board, dx, dy):
         nx, ny = self.x + dx, self.y + dy
-        x, y = self.x, self.y
-        if not (not self.is_red and 3 <= nx <= 5 and 0 <= ny <= 2) and \
-                not (self.is_red and 3 <= nx <= 5 and 7 <= ny <= 9):
-            # print 'out of castle'
+        lst = self.red_can_move_list if self.is_red else self.green_can_move_list
+        if (nx, ny) not in lst:
             return False
-        if not self.is_red and (nx, ny) == (4, 1) or (x, y) == (4, 1):
-            if abs(dx) > 1 or abs(dy) > 1:
-                # print 'too far'
-                return False
-        elif self.is_red and (nx, ny) == (4, 8) or (x, y) == (4, 8):
-            if abs(dx) > 1 or abs(dy) > 1:
-                # print 'too far'
-                return False
-        elif abs(dx) + abs(dy) != 1:
-            # print 'no diag'
-            return False
-        return True
+        return abs(dx) == 1 and abs(dy) == 1
 
     def __init__(self, x, y, is_red):
         ChessPiece.__init__(self, x, y, is_red)
