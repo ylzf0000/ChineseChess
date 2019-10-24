@@ -35,9 +35,11 @@ class Xiang(ChessPiece):
                              (6, 9))
         lst = red_can_move_list if self.is_red else green_can_move_list
         for pos in lst:
-            dx = abs(self.x - pos[0])
-            dy = abs(self.y - pos[1])
-            if self.board.has_not_piece_or_diffcolor(pos,self.is_red) and dx == 2 and dy == 2:
+            dx = pos[0] - self.x
+            dy = pos[1] - self.y
+            if self.board.has_not_piece_or_diffcolor(pos, self.is_red) and \
+                    abs(dx) == 2 and abs(dy) == 2 and \
+                    not (self.x + dx / 2, self.y + dy / 2) in self.board.pieces:
                 moves.append(pos)
         return moves
 
@@ -58,4 +60,4 @@ class Xiang(ChessPiece):
     #     return True
 
     def __init__(self, x, y, is_red, board):
-        ChessPiece.__init__(self, x, y, is_red, board,'Xiang')
+        ChessPiece.__init__(self, x, y, is_red, board, 'Xiang')

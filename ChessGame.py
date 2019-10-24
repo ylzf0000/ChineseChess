@@ -7,7 +7,6 @@ from ChessView import ChessView
 
 
 class ChessGame:
-    str_rg = ['Green: ', 'Red: ']
 
     def __init__(self):
         self.board = ChessBoard()
@@ -25,8 +24,8 @@ class ChessGame:
             if p.is_red == is_red:
                 moves = p.get_move_locs()
                 if moves and moves[0]:
-                    print(self.str_rg[p.is_red], p.name,
-                          ': from', p.x, p.y, ' to', moves[0][0], moves[0][1])
+                    # print(self.str_rg[p.is_red], p.name,
+                    #       ': from', p.x, p.y, ' to', moves[0][0], moves[0][1])
                     self.select(p.x, p.y)
                     # print(self.board.selected_piece)
                     time.sleep(0.1)
@@ -45,11 +44,11 @@ class ChessGame:
         return ok
 
     def run_ai2go(self, event):
-        # threading.main_thread().
-        _thread.start_new_thread(self.ai2go, ())
+        threading.Thread(target=self.ai2go, name='ai', daemon=True).start()
+        # _thread.start_new_thread(self.ai2go, ())
 
     def ai2go(self):
-        while True:
+        while not self.board.is_game_over():
             time.sleep(1)
             self.aigo(True)
             time.sleep(1)
@@ -57,7 +56,9 @@ class ChessGame:
             # tkinter.
 
     def on_click_board(self, event):
-        print(event.x, event.y)
+        if self.board.is_game_over():
+            return
+        # print(event.x, event.y)
         rx, ry = Global.coord_real2board(event.x), Global.coord_real2board(event.y)
 
         if self.select(rx, ry):

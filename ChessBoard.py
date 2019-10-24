@@ -58,15 +58,23 @@ class ChessBoard:
         self.pieces[8, 9] = Ju(8, 9, True, self)
 
         self.selected_piece = None
+        self.kill_king = None
+
+    def is_game_over(self):
+        return self.kill_king != None
 
     def can_move(self, x, y, dx, dy):
         return self.pieces[x, y].can_move(dx, dy)
 
     def move(self, x, y, dx, dy):
+        p = self.pieces[x, y]
+        print(Global.str_rg[p.is_red], p.name,
+              ': from', p.x, p.y, ' to', x + dx, y + dy)
         return self.pieces[x, y].move(dx, dy)
 
     def remove(self, x, y):
         del self.pieces[x, y]
+
 
     def is_pos_legal(self, x, y):
         return x >= 0 and y >= 0 and x <= 8 and y <= 9
@@ -79,6 +87,7 @@ class ChessBoard:
             cur_x += dx
             cur_y += dy
         return None
+
 
     def has_not_piece_or_diffcolor(self, pos, is_red):
         return (pos not in self.pieces) or (self.pieces[pos].is_red != is_red)
@@ -106,6 +115,9 @@ class ChessBoard:
         if self.pieces[x, y].is_red != player_is_red:
             ox, oy = self.selected_piece.x, self.selected_piece.y
             if self.can_move(ox, oy, x - ox, y - oy):
+                if self.pieces[x, y].is_king:
+                    self.kill_king = self.pieces[x, y].name
+                    print("Game Over!")
                 self.move(ox, oy, x - ox, y - oy)
                 self.pieces[x, y].selected = False
                 self.selected_piece = None

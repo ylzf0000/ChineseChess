@@ -3,7 +3,9 @@ from chessman.ChessPiece import ChessPiece
 
 
 class Shuai(ChessPiece):
-    is_king = True
+    def __init__(self, x, y, is_red, board):
+        ChessPiece.__init__(self, x, y, is_red, board, 'Shuai')
+        self.is_king = True
 
     def get_image_file_name(self):
         if self.selected:
@@ -24,7 +26,7 @@ class Shuai(ChessPiece):
             for y in by:
                 dx = abs(self.x - x)
                 dy = abs(self.y - y)
-                if self.board.has_not_piece_or_diffcolor((x, y),self.is_red) and \
+                if self.board.has_not_piece_or_diffcolor((x, y), self.is_red) and \
                         ((dx == 0 and dy == 1) or (dx == 1 and dy == 0)):
                     moves.append((x, y))
         return moves
@@ -40,6 +42,3 @@ class Shuai(ChessPiece):
     #     if abs(dx) + abs(dy) != 1:
     #         return False
     #     return True
-
-    def __init__(self, x, y, is_red, board):
-        ChessPiece.__init__(self, x, y, is_red, board,'Shuai')

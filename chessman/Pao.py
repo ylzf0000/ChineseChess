@@ -29,13 +29,13 @@ class Pao(ChessPiece):
                 if (x, y) not in self.board.pieces:
                     moves.append((x, y))
                 else:
-                    p = self.board.has_a_piece(x, y, x + dx[i], y + dy[i])
+                    p = self.board.has_a_piece(x + dx[i], y + dy[i], dx[i], dy[i])
                     if p and self.board.pieces[p].is_red != self.is_red:
                         moves.append(p)
                     break
                 x += dx[i]
                 y += dy[i]
-        return  moves
+        return moves
 
     # def can_move(self, board, dx, dy):
     #     if dx != 0 and dy != 0:
