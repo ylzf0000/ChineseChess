@@ -1,22 +1,28 @@
 class ChessPiece:
-    selected = False
-    is_king = False
 
-    def __init__(self, x, y, is_red, board):
+
+    def __init__(self, x, y, is_red, board, name):
+        self.selected = False
+        self.is_king = False
         self.x = x
         self.y = y
         self.is_red = is_red
         self.board = board
+        self.name = name
 
-    def get_move_locs(self):
-        moves = []
-        for x in range(9):
-            for y in range(10):
-                if (x, y) in self.board.pieces and self.board.pieces[x, y].is_red == self.is_red:
-                    continue
-                if self.can_move(self.board, x - self.x, y - self.y):
-                    moves.append((x, y))
-        return moves
+    def can_move(self, dx, dy):
+        return (self.x + dx, self.y + dy) in self.get_move_locs()
+
+
+    # def get_move_locs(self):
+    #     moves = []
+    #     for x in range(9):
+    #         for y in range(10):
+    #             if (x, y) in self.board.pieces and self.board.pieces[x, y].is_red == self.is_red:
+    #                 continue
+    #             if self.can_move(x - self.x, y - self.y):
+    #                 moves.append((x, y))
+    #     return moves
 
     def move(self, dx, dy):
         nx, ny = self.x + dx, self.y + dy
@@ -28,15 +34,15 @@ class ChessPiece:
         self.board.pieces[self.x, self.y] = self
         return True
 
-    def count_pieces(self, board, x, y, dx, dy):
-        sx = dx / abs(dx) if dx != 0 else 0
-        sy = dy / abs(dy) if dy != 0 else 0
-        nx, ny = x + dx, y + dy
-        x, y = x + sx, y + sy
-        cnt = 0
-        while x != nx or y != ny:
-            if (x, y) in board.pieces:
-                cnt += 1
-            x += sx
-            y += sy
-        return cnt
+    # def count_pieces(self, board, x, y, dx, dy):
+    #     sx = dx / abs(dx) if dx != 0 else 0
+    #     sy = dy / abs(dy) if dy != 0 else 0
+    #     nx, ny = x + dx, y + dy
+    #     x, y = x + sx, y + sy
+    #     cnt = 0
+    #     while x != nx or y != ny:
+    #         if (x, y) in board.pieces:
+    #             cnt += 1
+    #         x += sx
+    #         y += sy
+    #     return cnt

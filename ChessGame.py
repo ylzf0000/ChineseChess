@@ -1,58 +1,68 @@
 import _thread
 import time
+import threading
 
 from ChessBoard import *
 from ChessView import ChessView
 
 
 class ChessGame:
-    board = ChessBoard()
-    player_is_red = True
+    str_rg = ['Green: ', 'Red: ']
 
     def __init__(self):
-        self.view = ChessView(self)
+        self.board = ChessBoard()
+        self.player_is_red = True
+        self.view = ChessView(self, self.board)
         self.view.showMsg("Red")
-        self.view.draw_board(self.board)
+        self.view.draw_board()
 
     def start(self):
         self.view.start()
 
-    def aigo(self,is_red):
-        for p in self.board.pieces:
-            pp = self.board.pieces[p]
-            if  pp.is_red == is_red:
-                moves = pp.get_move_locs()
+    def aigo(self, is_red):
+        for k in self.board.pieces:
+            p = self.board.pieces[k]
+            if p.is_red == is_red:
+                moves = p.get_move_locs()
                 if moves and moves[0]:
-                    self.drop(pp.x, pp.y)
-                    self.drop(moves[0][0], moves[0][1])
+                    print(self.str_rg[p.is_red], p.name,
+                          ': from', p.x, p.y, ' to', moves[0][0], moves[0][1])
+                    self.select(p.x, p.y)
+                    # print(self.board.selected_piece)
+                    time.sleep(0.1)
+                    self.select(moves[0][0], moves[0][1])
+                    self.board.selected_piece = None
                     return
+                else:
+                    continue
 
-    def drop(self, rx, ry):
+    def select(self, rx, ry):
         ok = self.board.select(rx, ry, self.player_is_red)
         if ok:
             self.player_is_red = not self.player_is_red
             self.view.showMsg("Red" if self.player_is_red else "Green")
-        self.view.draw_board(self.board)
+        self.view.is_refresh = True
         return ok
 
-    def gogo(self):
+    def run_ai2go(self, event):
+        # threading.main_thread().
+        _thread.start_new_thread(self.ai2go, ())
+
+    def ai2go(self):
         while True:
             time.sleep(1)
             self.aigo(True)
             time.sleep(1)
             self.aigo(False)
+            # tkinter.
 
-    def callback(self, event):
+    def on_click_board(self, event):
         print(event.x, event.y)
         rx, ry = Global.coord_real2board(event.x), Global.coord_real2board(event.y)
-        if self.drop(rx, ry):
-            self.aigo(False)
-            _thread.start_new_thread(self.gogo,())
 
+        if self.select(rx, ry):
+            self.aigo(False)
 
 
 game = ChessGame()
 game.start()
-# while True:
-#     game.aigo()
-#     game.aigo()

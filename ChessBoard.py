@@ -60,7 +60,7 @@ class ChessBoard:
         self.selected_piece = None
 
     def can_move(self, x, y, dx, dy):
-        return self.pieces[x, y].can_move(self, dx, dy)
+        return self.pieces[x, y].can_move(dx, dy)
 
     def move(self, x, y, dx, dy):
         return self.pieces[x, y].move(dx, dy)
@@ -68,8 +68,20 @@ class ChessBoard:
     def remove(self, x, y):
         del self.pieces[x, y]
 
-    def is_pos_legal(self,x,y):
+    def is_pos_legal(self, x, y):
         return x >= 0 and y >= 0 and x <= 8 and y <= 9
+
+    # 从(cur_x,cur_y)向方向(dx, dy)搜索，看是否有子
+    def has_a_piece(self, cur_x, cur_y, dx, dy):
+        while self.is_pos_legal(cur_x, cur_y):
+            if (cur_x, cur_y) in self.pieces:
+                return (cur_x, cur_y)
+            cur_x += dx
+            cur_y += dy
+        return None
+
+    def has_not_piece_or_diffcolor(self, pos, is_red):
+        return (pos not in self.pieces) or (self.pieces[pos].is_red != is_red)
 
     def select(self, x, y, player_is_red):
         if not self.selected_piece:

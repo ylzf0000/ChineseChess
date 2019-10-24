@@ -35,12 +35,23 @@ class Shi(ChessPiece):
             else:
                 return Global.image_chess_path + "BA.GIF"
 
-    def can_move(self, board, dx, dy):
-        nx, ny = self.x + dx, self.y + dy
+    def get_move_locs(self):
+        moves = []
         lst = self.red_can_move_list if self.is_red else self.green_can_move_list
-        if (nx, ny) not in lst:
-            return False
-        return abs(dx) == 1 and abs(dy) == 1
+        for pos in lst:
+            dx = self.x - pos[0]
+            dy = self.y - pos[1]
+            if self.board.has_not_piece_or_diffcolor(pos,self.is_red) and \
+                    abs(dx) == 1 and abs(dy) == 1:
+                moves.append(pos)
+        return moves
+
+    # def can_move(self, board, dx, dy):
+    #     nx, ny = self.x + dx, self.y + dy
+    #     lst = self.red_can_move_list if self.is_red else self.green_can_move_list
+    #     if (nx, ny) not in lst:
+    #         return False
+    #     return abs(dx) == 1 and abs(dy) == 1
 
     def __init__(self, x, y, is_red, board):
-        ChessPiece.__init__(self, x, y, is_red, board)
+        ChessPiece.__init__(self, x, y, is_red, board, 'Shi')

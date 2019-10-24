@@ -28,15 +28,15 @@ class Ju(ChessPiece):
                     break
                 if (x, y) not in self.board.pieces:
                     moves.append((x, y))
-                elif self.board[x, y].is_red != self.is_red:
+                elif self.board.pieces[x, y].is_red != self.is_red:
                     moves.append((x, y))
                     break
                 x += dx[i]
                 y += dy[i]
         return moves
 
-    def can_move(self, dx, dy):
-        return (self.x + dx, self.y + dy) in self.get_move_locs()
+    # def can_move(self, dx, dy):
+    #     return (self.x + dx, self.y + dy) in self.get_move_locs()
 
     def __init__(self, x, y, is_red, board):
-        ChessPiece.__init__(self, x, y, is_red, board)
+        ChessPiece.__init__(self, x, y, is_red, board, 'Ju')
