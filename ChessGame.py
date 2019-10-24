@@ -1,7 +1,10 @@
 import _thread
+import copy
+import sys
 import time
 import threading
 
+import Alg
 from ChessBoard import *
 from ChessView import ChessView
 
@@ -18,22 +21,16 @@ class ChessGame:
     def start(self):
         self.view.start()
 
-    def aigo(self, is_red):
-        for k in self.board.pieces:
-            p = self.board.pieces[k]
-            if p.is_red == is_red:
-                moves = p.get_move_locs()
-                if moves and moves[0]:
-                    # print(self.str_rg[p.is_red], p.name,
-                    #       ': from', p.x, p.y, ' to', moves[0][0], moves[0][1])
-                    self.select(p.x, p.y)
-                    # print(self.board.selected_piece)
-                    time.sleep(0.1)
-                    self.select(moves[0][0], moves[0][1])
-                    self.board.selected_piece = None
-                    return
-                else:
-                    continue
+    def ai_think(self):
+        score, move = Alg.AlphaBeta(self.board, 2, -sys.maxsize - 1, sys.maxsize, is_red=self.player_is_red, is_root=True)
+        print(move)
+        return move
+
+    def aigo(self):
+        move = self.ai_think()
+        self.select(move[0][0], move[0][1])
+        time.sleep(0.1)
+        self.select(move[1][0], move[1][1])
 
     def select(self, rx, ry):
         ok = self.board.select(rx, ry, self.player_is_red)
@@ -50,9 +47,9 @@ class ChessGame:
     def ai2go(self):
         while not self.board.is_game_over():
             time.sleep(1)
-            self.aigo(True)
-            time.sleep(1)
-            self.aigo(False)
+            self.aigo()
+            # time.sleep(1)
+            # self.aigo(False)
             # tkinter.
 
     def on_click_board(self, event):
@@ -62,7 +59,7 @@ class ChessGame:
         rx, ry = Global.coord_real2board(event.x), Global.coord_real2board(event.y)
 
         if self.select(rx, ry):
-            self.aigo(False)
+            self.aigo()
 
 
 game = ChessGame()

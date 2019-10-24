@@ -2,10 +2,13 @@
 import os
 
 # 全局变量
+
+
 cur_path = os.path.abspath('.')
 image_path = 'images/IMAGES_X/'
 image_chess_path = 'images/IMAGES_X/COMIC/'
 str_rg = ['Green: ', 'Red: ']
+
 
 # 全局函数
 def coord_real2board(x):
@@ -17,3 +20,5 @@ def coord_real2board(x):
 
 def coord_board2real(x):
     return 40 + 73 * x
+
+

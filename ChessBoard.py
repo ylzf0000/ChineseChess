@@ -73,8 +73,8 @@ class ChessBoard:
         return self.pieces[x, y].move(dx, dy)
 
     def remove(self, x, y):
+        # print('remove: ', x, y, self.pieces[x, y].name)
         del self.pieces[x, y]
-
 
     def is_pos_legal(self, x, y):
         return x >= 0 and y >= 0 and x <= 8 and y <= 9
@@ -87,7 +87,6 @@ class ChessBoard:
             cur_x += dx
             cur_y += dy
         return None
-
 
     def has_not_piece_or_diffcolor(self, pos, is_red):
         return (pos not in self.pieces) or (self.pieces[pos].is_red != is_red)
@@ -128,3 +127,10 @@ class ChessBoard:
         self.pieces[x, y].selected = True
         self.selected_piece = self.pieces[x, y]
         return False
+
+    def num_piece(self, is_red, Type):
+        num = 0
+        for _, p in self.pieces.items():
+            if type(p) == Type and p.is_red == is_red:
+                num += 1
+        return num

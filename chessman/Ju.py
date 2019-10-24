@@ -3,6 +3,7 @@ from chessman.ChessPiece import ChessPiece
 
 
 class Ju(ChessPiece):
+
     def __init__(self, x, y, is_red, board):
         ChessPiece.__init__(self, x, y, is_red, board, 'Ju')
 
@@ -32,6 +33,8 @@ class Ju(ChessPiece):
                     moves.append((x, y))
                 elif self.board.pieces[x, y].is_red != self.is_red:
                     moves.append((x, y))
+                    break
+                else:
                     break
                 x += dx[i]
                 y += dy[i]

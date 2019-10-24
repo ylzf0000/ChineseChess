@@ -1,6 +1,5 @@
 class ChessPiece:
 
-
     def __init__(self, x, y, is_red, board, name):
         self.selected = False
         self.is_king = False
@@ -12,17 +11,6 @@ class ChessPiece:
 
     def can_move(self, dx, dy):
         return (self.x + dx, self.y + dy) in self.get_move_locs()
-
-
-    # def get_move_locs(self):
-    #     moves = []
-    #     for x in range(9):
-    #         for y in range(10):
-    #             if (x, y) in self.board.pieces and self.board.pieces[x, y].is_red == self.is_red:
-    #                 continue
-    #             if self.can_move(x - self.x, y - self.y):
-    #                 moves.append((x, y))
-    #     return moves
 
     def move(self, dx, dy):
         nx, ny = self.x + dx, self.y + dy

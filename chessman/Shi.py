@@ -3,6 +3,7 @@ from chessman.ChessPiece import ChessPiece
 
 
 class Shi(ChessPiece):
+
     def __init__(self, x, y, is_red, board):
         ChessPiece.__init__(self, x, y, is_red, board, 'Shi')
 
@@ -31,10 +32,3 @@ class Shi(ChessPiece):
                     abs(dx) == 1 and abs(dy) == 1:
                 moves.append(pos)
         return moves
-
-    # def can_move(self, board, dx, dy):
-    #     nx, ny = self.x + dx, self.y + dy
-    #     lst = self.red_can_move_list if self.is_red else self.green_can_move_list
-    #     if (nx, ny) not in lst:
-    #         return False
-    #     return abs(dx) == 1 and abs(dy) == 1

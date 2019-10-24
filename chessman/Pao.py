@@ -3,6 +3,7 @@ from chessman.ChessPiece import ChessPiece
 
 
 class Pao(ChessPiece):
+
     def __init__(self, x, y, is_red, board):
         ChessPiece.__init__(self, x, y, is_red, board, 'Pao')
 
@@ -38,20 +39,3 @@ class Pao(ChessPiece):
                 x += dx[i]
                 y += dy[i]
         return moves
-
-    # def can_move(self, board, dx, dy):
-    #     if dx != 0 and dy != 0:
-    #         # print 'no diag'
-    #         return False
-    #     nx, ny = self.x + dx, self.y + dy
-    #     cnt = self.count_pieces(board, self.x, self.y, dx, dy)
-    #     # print('cnt', cnt)
-    #     if (nx, ny) not in board.pieces:
-    #         if cnt != 0:
-    #             # print 'blocked'
-    #             return False
-    #     else:
-    #         if cnt != 1:
-    #             # print 'cannot kill'
-    #             return False
-    #     return True
