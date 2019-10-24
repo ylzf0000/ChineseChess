@@ -1,5 +1,3 @@
-import sys
-
 import Global
 from chessman.ChessPiece import ChessPiece
 
@@ -26,7 +24,7 @@ class Bing(ChessPiece):
         if not over_river:
             x = self.x
             y = self.y - 1 if self.is_red else self.y + 1
-            if self.board.has_not_piece_or_diffcolor((x, y),self.is_red):
+            if self.board.has_not_piece_or_diffcolor((x, y), self.is_red):
                 return [(x, y)]
         else:
             dx = (-1, 0, 1)
@@ -36,14 +34,6 @@ class Bing(ChessPiece):
                 x = self.x + dx[i]
                 y = self.y + dy[i]
                 if self.board.is_pos_legal(x, y) and \
-                        self.board.has_not_piece_or_diffcolor((x, y),self.is_red):
+                        self.board.has_not_piece_or_diffcolor((x, y), self.is_red):
                     moves.append((x, y))
             return moves
-
-    # def can_move(self, board, dx, dy):
-    #     return (self.x + dx, self.y + dy) in self.get_move_locs()
-
-
-
-    def display(self):
-        sys.stdout.write('B')

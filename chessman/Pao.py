@@ -3,6 +3,8 @@ from chessman.ChessPiece import ChessPiece
 
 
 class Pao(ChessPiece):
+    def __init__(self, x, y, is_red, board):
+        ChessPiece.__init__(self, x, y, is_red, board, 'Pao')
 
     def get_image_file_name(self):
         if self.selected:
@@ -53,6 +55,3 @@ class Pao(ChessPiece):
     #             # print 'cannot kill'
     #             return False
     #     return True
-
-    def __init__(self, x, y, is_red, board):
-        ChessPiece.__init__(self, x, y, is_red, board, 'Pao')

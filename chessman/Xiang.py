@@ -3,6 +3,11 @@ from chessman.ChessPiece import ChessPiece
 
 
 class Xiang(ChessPiece):
+    green_can_move_list = ((2, 0), (6, 0), (0, 2), (4, 2), (8, 2), (2, 4), (6, 4))
+    red_can_move_list = ((2, 5), (6, 5), (0, 7), (4, 7), (8, 7), (2, 9), (6, 9))
+
+    def __init__(self, x, y, is_red, board):
+        ChessPiece.__init__(self, x, y, is_red, board, 'Xiang')
 
     def get_image_file_name(self):
         if self.selected:
@@ -18,22 +23,7 @@ class Xiang(ChessPiece):
 
     def get_move_locs(self):
         moves = []
-        green_can_move_list = ((2, 0),
-                               (6, 0),
-                               (0, 2),
-                               (4, 2),
-                               (8, 2),
-                               (2, 4),
-                               (6, 4))
-
-        red_can_move_list = ((2, 5),
-                             (6, 5),
-                             (0, 7),
-                             (4, 7),
-                             (8, 7),
-                             (2, 9),
-                             (6, 9))
-        lst = red_can_move_list if self.is_red else green_can_move_list
+        lst = self.red_can_move_list if self.is_red else self.green_can_move_list
         for pos in lst:
             dx = pos[0] - self.x
             dy = pos[1] - self.y
@@ -58,6 +48,3 @@ class Xiang(ChessPiece):
     #         # print 'blocked'
     #         return False
     #     return True
-
-    def __init__(self, x, y, is_red, board):
-        ChessPiece.__init__(self, x, y, is_red, board, 'Xiang')

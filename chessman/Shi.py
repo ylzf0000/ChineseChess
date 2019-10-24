@@ -1,26 +1,12 @@
 import Global
-
-__author__ = 'Zhaoliang'
 from chessman.ChessPiece import ChessPiece
 
 
 class Shi(ChessPiece):
-    # green_can_move_dict = dict()
-    # green_can_move_dict[3, 0] = True
-    # green_can_move_dict[5, 0] = True
-    # green_can_move_dict[4, 1] = True
-    # green_can_move_dict[3, 2] = True
-    # green_can_move_dict[5, 2] = True
+    def __init__(self, x, y, is_red, board):
+        ChessPiece.__init__(self, x, y, is_red, board, 'Shi')
 
     green_can_move_list = ((3, 0), (5, 0), (4, 1), (3, 2), (5, 2))
-
-    # red_can_move_dict = dict()
-    # red_can_move_dict[3, 7] = True
-    # red_can_move_dict[5, 7] = True
-    # red_can_move_dict[4, 8] = True
-    # red_can_move_dict[3, 9] = True
-    # red_can_move_dict[5, 9] = True
-
     red_can_move_list = ((3, 7), (5, 7), (4, 8), (3, 9), (5, 9))
 
     def get_image_file_name(self):
@@ -41,7 +27,7 @@ class Shi(ChessPiece):
         for pos in lst:
             dx = self.x - pos[0]
             dy = self.y - pos[1]
-            if self.board.has_not_piece_or_diffcolor(pos,self.is_red) and \
+            if self.board.has_not_piece_or_diffcolor(pos, self.is_red) and \
                     abs(dx) == 1 and abs(dy) == 1:
                 moves.append(pos)
         return moves
@@ -52,6 +38,3 @@ class Shi(ChessPiece):
     #     if (nx, ny) not in lst:
     #         return False
     #     return abs(dx) == 1 and abs(dy) == 1
-
-    def __init__(self, x, y, is_red, board):
-        ChessPiece.__init__(self, x, y, is_red, board, 'Shi')

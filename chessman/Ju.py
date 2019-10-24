@@ -3,6 +3,8 @@ from chessman.ChessPiece import ChessPiece
 
 
 class Ju(ChessPiece):
+    def __init__(self, x, y, is_red, board):
+        ChessPiece.__init__(self, x, y, is_red, board, 'Ju')
 
     def get_image_file_name(self):
         if self.selected:
@@ -34,9 +36,3 @@ class Ju(ChessPiece):
                 x += dx[i]
                 y += dy[i]
         return moves
-
-    # def can_move(self, dx, dy):
-    #     return (self.x + dx, self.y + dy) in self.get_move_locs()
-
-    def __init__(self, x, y, is_red, board):
-        ChessPiece.__init__(self, x, y, is_red, board, 'Ju')

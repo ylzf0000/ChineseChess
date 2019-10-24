@@ -3,6 +3,12 @@ from chessman.ChessPiece import ChessPiece
 
 
 class Ma(ChessPiece):
+    dx = (2, 1, -1, -2, -2, -1, 1, 2)
+    dy = (1, 2, 2, 1, -1, -2, -2, -1)
+    obstacles = ((1, 0), (0, 1), (0, 1), (-1, 0), (-1, 0), (0, -1), (0, -1), (1, 0))
+
+    def __init__(self, x, y, is_red, board):
+        ChessPiece.__init__(self, x, y, is_red, board, 'Ma')
 
     def get_image_file_name(self):
         if self.selected:
@@ -18,23 +24,13 @@ class Ma(ChessPiece):
 
     def get_move_locs(self):
         moves = []
-        dx = (2, 1, -1, -2, -2, -1, 1, 2)
-        dy = (1, 2, 2, 1, -1, -2, -2, -1)
-        obstacles = ((1, 0),
-                     (0, 1),
-                     (0, 1),
-                     (-1, 0),
-                     (-1, 0),
-                     (0, -1),
-                     (0, -1),
-                     (1, 0))
         for i in range(8):
-            x = self.x + dx[i]
-            y = self.y + dy[i]
+            x = self.x + self.dx[i]
+            y = self.y + self.dy[i]
             if not self.board.is_pos_legal(x, y):
                 continue
-            ox = self.x + obstacles[i][0]
-            oy = self.y + obstacles[i][1]
+            ox = self.x + self.obstacles[i][0]
+            oy = self.y + self.obstacles[i][1]
             if self.board.has_not_piece_or_diffcolor((x, y), self.is_red) and \
                     (ox, oy) not in self.board.pieces:
                 moves.append((x, y))
@@ -53,6 +49,3 @@ class Ma(ChessPiece):
     #         # print 'blocked'
     #         return False
     #     return True
-
-    def __init__(self, x, y, is_red, board):
-        ChessPiece.__init__(self, x, y, is_red, board, 'Ma')
