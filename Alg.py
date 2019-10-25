@@ -2,6 +2,7 @@ import copy
 import sys
 import traceback
 
+import Global
 from chessman.Bing import Bing
 from chessman.Ju import Ju
 from chessman.Ma import Ma
@@ -39,7 +40,7 @@ def AlphaBeta(board, depth, alpha, beta, is_red, is_root=False):
             before_move_piece1 = pieces_copy[pos]
             before_move_piece2 = pieces_copy[mv_loc] if mv_loc in pieces_copy else None
             board.pieces[pos].move(mv_loc[0] - piece.x, mv_loc[1] - piece.y)
-            print(depth, alpha, beta, is_red, pos)
+            print(depth, Global.str_rg[piece.is_red], piece.name,pos,mv_loc)
             val = -AlphaBeta(board, depth - 1, -beta, -alpha, not is_red)[0]
             board.pieces[pos] = copy.deepcopy(before_move_piece1)
             if before_move_piece2 != None:
