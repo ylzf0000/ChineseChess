@@ -22,7 +22,11 @@ class ChessGame:
         self.view.start()
 
     def ai_think(self):
-        score, move = Alg.AlphaBeta(self.board, 2, -sys.maxsize - 1, sys.maxsize, is_red=self.player_is_red, is_root=True)
+        score, move = Alg.AlphaBeta(copy.deepcopy(self.board),
+                                    2,
+                                    -sys.maxsize - 1, sys.maxsize,
+                                    is_red=self.player_is_red,
+                                    is_root=True)
         print(move)
         return move
 
@@ -48,18 +52,13 @@ class ChessGame:
         while not self.board.is_game_over():
             time.sleep(1)
             self.aigo()
-            # time.sleep(1)
-            # self.aigo(False)
-            # tkinter.
 
     def on_click_board(self, event):
         if self.board.is_game_over():
             return
-        # print(event.x, event.y)
         rx, ry = Global.coord_real2board(event.x), Global.coord_real2board(event.y)
-
         if self.select(rx, ry):
-            self.aigo()
+            threading.Thread(target=self.aigo, name='ai', daemon=True).start()
 
 
 game = ChessGame()

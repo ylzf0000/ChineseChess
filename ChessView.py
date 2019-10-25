@@ -37,6 +37,8 @@ class ChessView:
             self.move_images = []
             pieces = self.board.pieces
             for (x, y) in pieces.keys():
+                if not pieces[x,y]:
+                    continue
                 self.piece_images[x, y] = tkinter.PhotoImage(file=pieces[x, y].get_image_file_name())
                 self.can.create_image(Global.coord_board2real(x), Global.coord_board2real(y), image=self.piece_images[x, y])
             if self.board.selected_piece:

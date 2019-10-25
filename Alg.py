@@ -1,4 +1,6 @@
 import copy
+import sys
+import traceback
 
 from chessman.Bing import Bing
 from chessman.Ju import Ju
@@ -12,7 +14,7 @@ from chessman.Xiang import Xiang
 def EvaluateBoard(board, is_red):
     Types = (Shuai, Shi, Xiang, Ma, Ju, Pao, Bing)
     x = []
-    w = (1000, 10, 10, 10, 10, 10, 10, -1100, -20, -20, -20, -20, -20, -20)
+    w = (1500, 30, 30, 100, 300, 200, 100, -1000, -20, -20, -80, -260, -200, -90)
     for type in Types:
         x.append(board.num_piece(is_red, type))
     for type in Types:
@@ -28,29 +30,26 @@ def AlphaBeta(board, depth, alpha, beta, is_red, is_root=False):
         return EvaluateBoard(board, is_red), None
 
     move = None
-    board_copy = copy.deepcopy(board)
-    for _, _p in board.pieces.items():
-        if not _p.get_move_locs() or _p.is_red != is_red:
+    pieces_copy = copy.deepcopy(board.pieces)
+    # print(id(pieces_copy) == id(board.pieces))
+    for pos, piece in pieces_copy.items():
+        if not piece or not piece.get_move_locs() or piece.is_red != is_red:
             continue
-        for mv in _p.get_move_locs():
-            p = board_copy.pieces[_p.x, _p.y]
-            print(p.name, 'from', p.x, p.y)
-            print('to', mv[0], mv[1])
-            p1 = copy.deepcopy(p)
-            p2 = None
-            if (mv[0],mv[1]) in board_copy.pieces:
-                p2 = copy.deepcopy(board_copy.pieces[mv])
-            p.move(mv[0] - p.x, mv[1] - p.y)
-            val = -AlphaBeta(board_copy, depth - 1, -beta, -alpha, not is_red)[0]
-            board_copy.pieces[_p.x, _p.y] = p1
-            board_copy.pieces[mv] = p2 if p2 else None
-            # print(val)
-            # val = -(val[0])
+
+        for mv_loc in piece.get_move_locs():
+            before_move_piece1 = pieces_copy[pos]
+            before_move_piece2 = pieces_copy[mv_loc] if mv_loc in pieces_copy else None
+            board.pieces[pos].move(mv_loc[0] - piece.x, mv_loc[1] - piece.y)
+            print(pos, pos in pieces_copy)
+            val = -AlphaBeta(board, depth - 1, -beta, -alpha, not is_red)[0]
+            board.pieces[pos] = copy.deepcopy(before_move_piece1)
+            if before_move_piece2 != None:
+                board.pieces[mv_loc] = copy.deepcopy(before_move_piece2)
             if val >= beta:
                 return beta, None
             if val > alpha:
                 alpha = val
                 if is_root:
-                    move = ((_p.x, _p.y), (mv[0], mv[1]))
+                    move = (pos, mv_loc)
 
     return alpha, move

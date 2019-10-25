@@ -73,6 +73,7 @@ class ChessBoard:
         return self.pieces[x, y].move(dx, dy)
 
     def remove(self, x, y):
+        # self.pieces[x, y] = None
         # print('remove: ', x, y, self.pieces[x, y].name)
         del self.pieces[x, y]
 
