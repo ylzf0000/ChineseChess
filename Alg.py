@@ -31,16 +31,15 @@ def AlphaBeta(board, depth, alpha, beta, is_red, is_root=False):
 
     move = None
     pieces_copy = copy.deepcopy(board.pieces)
-    # print(id(pieces_copy) == id(board.pieces))
     for pos, piece in pieces_copy.items():
-        if not piece or not piece.get_move_locs() or piece.is_red != is_red:
+        locs = piece.get_move_locs()
+        if not piece or not locs or piece.is_red != is_red:
             continue
-
-        for mv_loc in piece.get_move_locs():
+        for mv_loc in locs:
             before_move_piece1 = pieces_copy[pos]
             before_move_piece2 = pieces_copy[mv_loc] if mv_loc in pieces_copy else None
             board.pieces[pos].move(mv_loc[0] - piece.x, mv_loc[1] - piece.y)
-            print(pos, pos in pieces_copy)
+            print(depth, alpha, beta, is_red, pos)
             val = -AlphaBeta(board, depth - 1, -beta, -alpha, not is_red)[0]
             board.pieces[pos] = copy.deepcopy(before_move_piece1)
             if before_move_piece2 != None:
