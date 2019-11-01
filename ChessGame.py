@@ -22,9 +22,10 @@ class ChessGame:
         self.view.start()
 
     def ai_think(self):
-        score, move = Alg.AlphaBeta(copy.deepcopy(self.board),
-                                    2,
-                                    -sys.maxsize - 1, sys.maxsize,
+        score, move = Alg.AlphaBeta(board=copy.deepcopy(self.board),
+                                    depth=2,
+                                    alpha=-sys.maxsize - 1,
+                                    beta=sys.maxsize,
                                     is_red=self.player_is_red,
                                     is_root=True)
         print(move)

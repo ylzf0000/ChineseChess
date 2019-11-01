@@ -60,6 +60,13 @@ class ChessBoard:
         self.selected_piece = None
         self.kill_king = None
 
+    def get_pieces(self, is_red):
+        d = dict()
+        for k,v in self.pieces.items():
+            if v.is_red == is_red:
+                d[k] = v
+        return d
+
     def is_game_over(self):
         return self.kill_king != None
 
