@@ -1,7 +1,5 @@
 # Byte-compiled / optimized / DLL files
 __pycache__/
-Debug/
-Release/
 *.py[cod]
 *$py.class
 .vs
@@ -108,3 +106,21 @@ venv.bak/
 *.db
 *.opendb
 *.ipch
+*.obj
+*.tlog
+*.pch
+*.pchast
+dll_chinesechess/dll_chinesechess/x64/Debug/dll_chinesechess.vcxproj.FileListAbsolute.txt
+*.sarif
+*.xml
+dll_chinesechess/dll_chinesechess/Debug/vc142.idb
+dll_chinesechess/dll_chinesechess/Debug/vc142.pdb
+dll_chinesechess/dll_chinesechess/x64/Debug/vc142.idb
+dll_chinesechess/dll_chinesechess/x64/Debug/vc142.pdb
+dll_chinesechess/dll_chinesechess/x64/Release/vc142.pdb
+dll_chinesechess/x64/Debug/dll_chinesechess.dll.lastcodeanalysissucceeded
+dll_chinesechess/x64/Debug/dll_chinesechess.exp
+dll_chinesechess/x64/Debug/dll_chinesechess.ilk
+dll_chinesechess/x64/Release/dll_chinesechess.exp
+dll_chinesechess/x64/Release/dll_chinesechess.iobj
+dll_chinesechess/x64/Release/dll_chinesechess.ipdb
