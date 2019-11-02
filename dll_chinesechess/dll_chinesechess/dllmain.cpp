@@ -13,6 +13,10 @@ extern "C"
 		Board& board = Board::Instance();
 		board.Init();
 	}
+	DLL_EXPORT Board GetBoard()
+	{
+		return Board::Instance();
+	}
 }
 
 
