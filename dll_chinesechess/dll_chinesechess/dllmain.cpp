@@ -2,20 +2,48 @@
 #include "pch.h"
 #include "Alg.h"
 #define DLL_EXPORT __declspec(dllexport)
+Board& board = Board::Instance();
 extern "C"
 {
-	DLL_EXPORT void AIMove()
+	DLL_EXPORT void aiMove()
 	{
 		ResponseMove();
 	}
-	DLL_EXPORT void Start()
+	DLL_EXPORT void start()
 	{
-		Board& board = Board::Instance();
 		board.Init();
 	}
-	DLL_EXPORT Board GetBoard()
+	DLL_EXPORT int getPlayer()
 	{
-		return Board::Instance();
+		return board.player;
+	}
+	DLL_EXPORT BYTE* getSquares()
+	{
+		return board.squares;
+	}
+	DLL_EXPORT int getValRed()
+	{
+		return board.valRed;
+	}
+	DLL_EXPORT int getValBlack()
+	{
+		return board.valBlack;
+	}
+	DLL_EXPORT int getNStep()
+	{
+		return board.nStep;
+	}
+	DLL_EXPORT int getSqSelected()
+	{
+		return board.sqSelected;
+	}
+	DLL_EXPORT int getMvLast()
+	{
+		return board.mvLast;
+	}
+	DLL_EXPORT int isFlipped()
+	{
+		return board.isFlipped;
 	}
 }
 

@@ -1,6 +1,7 @@
 #pragma once
 #include "pch.h"
 #include "utility.h"
+
 struct Board
 {
 	static Board& Instance()
@@ -15,7 +16,7 @@ struct Board
 
 	int sqSelected;// 选中的格子，上一步棋
 	int mvLast;
-	bool isFlipped;// 是否翻转棋盘
+	BOOL isFlipped;// 是否翻转棋盘
 
 	void Init();// 初始化棋盘
 	int MovePiece(int mv);
