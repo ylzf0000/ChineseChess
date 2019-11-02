@@ -349,9 +349,9 @@ inline int mirrorXSquare(int pos)
 	return getPos_XY(flipX(getPosX(pos)), getPosY(pos));
 }
 
-// 格子水平镜像???
-inline int SQUARE_FORWARD(int sq, int sd) {
-	return sq - 16 + (sd << 5);
+// 格子向前一步(红向上，黑向下)
+inline int squareForward(int pos, int sd) {
+	return pos - 16 + (sd << 5);
 }
 
 // 走法是否符合帅(将)的步长
@@ -391,9 +391,9 @@ inline bool isHomeHalf(int pos, int sd)
 }
 
 // 是否已过河
-inline bool AwayHomeHalf(int pos, int sd)
+inline bool isAwayHomeHalf(int pos, int sd)
 {
-	return !isHomeHalf(pos, sd);
+	return (pos & 0x80) == (sd << 7);
 }
 
 // 是否在河的同一边

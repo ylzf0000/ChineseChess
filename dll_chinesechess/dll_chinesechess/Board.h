@@ -6,7 +6,7 @@ struct Board
 	int player;//0红1黑
 	BYTE squares[256];
 	int valRed, valBlack;
-	int dist;
+	int depth;// 距离根节点的步数
 
 	void Init();// 初始化棋盘
 	int MovePiece(int mv);
@@ -14,11 +14,11 @@ struct Board
 	bool MakeMove(int mv, int& pcKilled);
 	int GenerateMoves(int* mvs)const;
 	bool IsLegalMove(int mv)const;
-	bool IsChecked()const;
+	bool IsChecked()const;// 判断是否被将军
 	bool IsMate();
 	void UndoMakeMove(int mv, int pcKilled)
 	{
-		--dist;
+		--depth;
 		ChangeSide();
 		UndoMakeMove(mv, pcKilled);
 	}
