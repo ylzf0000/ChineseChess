@@ -14,7 +14,7 @@ struct Board
 	int depth;// 距离根节点的步数
 
 	int sqSelected;// 选中的格子，上一步棋
-	int mvLst;
+	int mvLast;
 	bool isFlipped;// 是否翻转棋盘
 
 	void Init();// 初始化棋盘
@@ -29,7 +29,7 @@ struct Board
 	{
 		--depth;
 		ChangeSide();
-		UndoMakeMove(mv, pcKilled);
+		UndoMovePiece(mv, pcKilled);
 	}
 	void ChangeSide() {
 		player = 1 - player;

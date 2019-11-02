@@ -90,7 +90,7 @@ int ResponseMove()
 	Board& board = Board::Instance();
 	int pcKilled;
 	board.MakeMove(sc.mvResult, pcKilled);
-	board.mvLst = sc.mvResult;
+	board.mvLast = sc.mvResult;
 	return 0;
 }
 

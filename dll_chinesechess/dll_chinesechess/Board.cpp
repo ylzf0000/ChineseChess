@@ -8,6 +8,8 @@ void Board::Init()
 	valRed = 0;
 	valBlack = 0;
 	depth = 0;
+	sqSelected = 0;
+	mvLast = 0;
 	memset(squares, 0, sizeof(squares));
 	for (int pos = 0; pos < 256; ++pos)
 	{
@@ -137,11 +139,11 @@ int Board::GenerateMoves(int* mvs) const
 				{
 					int pcDst = squares[dst];
 					if (pcDst == 0)
-						mvs[++nGenMoves] = getMove(src, dst);
+						mvs[nGenMoves++] = getMove(src, dst);
 					else //目的地有子
 					{
 						if (pcDst & pcOppSide)//是面对的子
-							mvs[++nGenMoves] = getMove(src, dst);
+							mvs[nGenMoves++] = getMove(src, dst);
 						//否则是自己的子
 						break;
 					}
@@ -160,7 +162,7 @@ int Board::GenerateMoves(int* mvs) const
 				{
 					int pcDst = squares[dst];
 					if (pcDst == 0)
-						mvs[++nGenMoves] = getMove(src, dst);
+						mvs[nGenMoves++] = getMove(src, dst);
 					else  //目的地有子
 						break;
 					dst += delta;
@@ -172,10 +174,9 @@ int Board::GenerateMoves(int* mvs) const
 					if (pcDst)
 					{
 						if (pcDst & pcOppSide)
-							mvs[++nGenMoves] = getMove(src, dst);
-					}
-					else
+							mvs[nGenMoves++] = getMove(src, dst);
 						break;
+					}
 					dst += delta;
 				}
 			}
@@ -188,7 +189,7 @@ int Board::GenerateMoves(int* mvs) const
 			{
 				int pcDst = squares[dst];
 				if ((pcDst & pcSelfSide) == 0)
-					mvs[++nGenMoves] = getMove(src, dst);
+					mvs[nGenMoves++] = getMove(src, dst);
 			}
 			if (isAwayHomeHalf(src, player))
 			{
@@ -199,7 +200,7 @@ int Board::GenerateMoves(int* mvs) const
 					{
 						int pcDst = squares[dst];
 						if ((pcDst & pcSelfSide) == 0)
-							mvs[++nGenMoves] = getMove(src, dst);
+							mvs[nGenMoves++] = getMove(src, dst);
 					}
 				}
 			}
