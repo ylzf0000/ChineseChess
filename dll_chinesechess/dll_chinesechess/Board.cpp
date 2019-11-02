@@ -280,6 +280,82 @@ bool Board::IsLegalMove(int mv) const
 // 判断是否被将军
 bool Board::IsChecked() const
 {
+	int pcSelfSide = sideTag(player);
+	int pcOppSide = oppSideTag(player);
+	int src;
+	// 找到棋盘上的帅(将)，再做以下判断：
+	for (src = 0; src < 256; ++src)
+		if (squares[src] == pcSelfSide + PIECE_JIANG)
+			break;
+
+	// 1. 判断是否被对方的兵(卒)将军
+	if (squares[squareForward(src, player)] == pcOppSide + PIECE_BING)
+		return true;
+	for (int delta = -1; delta <= 1; delta += 2)
+		if (squares[src + delta] == pcOppSide + PIECE_BING)
+			return true;
+
+	// 2. 判断是否被对方的马将军(以仕(士)的步长当作马腿)
+	for (int i = 0; i < 4; ++i)
+	{
+		if (squares[src + shiDelta[i]])
+			continue;
+		for (int j = 0; j < 2; ++j)
+		{
+			int pcDst = squares[src + maCheckDelta[i][j]];
+			if (pcDst == pcOppSide + PIECE_MA)
+				return true;
+		}
+	}
+
+	// 3. 判断是否被对方的车或炮将军(包括将帅对脸)
+	for (int i = 0; i < 4; ++i)
+	{
+		int delta = jiangDelta[i];
+		int dst = src + delta;
+		while (isInBoard(dst))
+		{
+			int pcDst = squares[dst];
+			if (pcDst)
+			{
+				if (pcDst == pcOppSide + PIECE_JU ||
+					pcDst == pcOppSide + PIECE_JIANG)
+					return true;
+				break;
+			}
+			dst += delta;
+		}
+		dst += delta;
+		while (isInBoard(dst))
+		{
+			int pcDst = squares[dst];
+			if (pcDst)
+			{
+				if (pcDst == pcOppSide + PIECE_PAO)
+					return true;
+				break;
+			}
+			dst += delta;
+		}
+	}
 	return false;
+}
+
+bool Board::IsMate()
+{
+	int mvs[MAX_GEN_MOVES];
+	int n = GenerateMoves(mvs);
+	for (int i = 0; i < n; ++i)
+	{
+		int pcKilled = MovePiece(mvs[i]);
+		if (!IsChecked())
+		{
+			UndoMovePiece(mvs[i], pcKilled);
+			return false;
+		}
+		else
+			UndoMovePiece(mvs[i], pcKilled);
+	}
+	return true;
 }
 

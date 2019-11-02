@@ -155,12 +155,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Alg.h" />
     <ClInclude Include="Board.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="utility.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Alg.cpp" />
     <ClCompile Include="Board.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="pch.cpp">

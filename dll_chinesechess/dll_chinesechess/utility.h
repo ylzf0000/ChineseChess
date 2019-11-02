@@ -146,9 +146,9 @@ constexpr BYTE maPin[512] = {
 constexpr BYTE jiangDelta[4] = { -16,-1,1,16 };
 // 仕(士)的步长
 constexpr BYTE shiDelta[4] = { -17,-15,15,17 };
-// 马的步长，以帅(将)的步长作为马腿
+// 马的步长，以帅(将)的步长作为马腿（固定起点）
 constexpr BYTE maDelta[4][2] = { {-33, -31}, {-18, 14}, {-14, 18}, {31, 33} };
-// 马被将军的步长，以仕(士)的步长作为马腿
+// 马将军的步长，以仕(士)的步长作为马腿（固定终点）
 constexpr BYTE maCheckDelta[4][2] = { {-33, -18}, {-31, -14}, {14, 31}, {18, 33} };
 // 开局棋盘
 constexpr BYTE initBoard[256] = {

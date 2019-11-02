@@ -3,10 +3,19 @@
 #include "utility.h"
 struct Board
 {
+	static Board& Instance()
+	{
+		static Board board;
+		return board;
+	}
 	int player;//0红1黑
 	BYTE squares[256];
 	int valRed, valBlack;
 	int depth;// 距离根节点的步数
+
+	int sqSelected;// 选中的格子，上一步棋
+	int mvLst;
+	bool isFlipped;// 是否翻转棋盘
 
 	void Init();// 初始化棋盘
 	int MovePiece(int mv);
@@ -15,7 +24,7 @@ struct Board
 	int GenerateMoves(int* mvs)const;
 	bool IsLegalMove(int mv)const;
 	bool IsChecked()const;// 判断是否被将军
-	bool IsMate();
+	bool IsMate();// 判断是否被杀
 	void UndoMakeMove(int mv, int pcKilled)
 	{
 		--depth;
