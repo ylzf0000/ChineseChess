@@ -15,10 +15,10 @@ def coord_real2board(x):
     if x <= 40:
         return 0
     else:
-        return round((x - 40) / 73)
+        return round((x - 40) / 72)
 
 
 def coord_board2real(x):
-    return 40 + 73 * x
+    return 40 + 72 * x
 
 

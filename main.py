@@ -2,7 +2,7 @@
 from ctypes import *
 from dll_func import *
 from PyQt5.QtWidgets import QApplication, QMainWindow
-from MainWindow import *
+from mainwindow import *
 
 if __name__ == '__main__':
     mode = 'd'

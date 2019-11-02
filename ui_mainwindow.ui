@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>600</height>
+    <width>1058</width>
+    <height>790</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,9 +16,18 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QHBoxLayout" name="horizontalLayout">
     <item>
-     <widget class="QLabel" name="labelImg">
-      <property name="text">
-       <string>TextLabel</string>
+     <widget class="QChessBoard" name="widgetBoard" native="true">
+      <property name="minimumSize">
+       <size>
+        <width>665</width>
+        <height>737</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>665</width>
+        <height>737</height>
+       </size>
       </property>
      </widget>
     </item>
@@ -47,7 +56,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>800</width>
+     <width>1058</width>
      <height>23</height>
     </rect>
    </property>
@@ -72,6 +81,14 @@
    </property>
   </action>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QChessBoard</class>
+   <extends>QWidget</extends>
+   <header>qchessboard.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

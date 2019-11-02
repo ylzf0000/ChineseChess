@@ -1,54 +1,51 @@
-# coding=utf-8
-import sys
-from ui_mainwindow import *
-from PyQt5.QtWidgets import QApplication, QMainWindow
+from PyQt5.QtWidgets import QWidget
 from PyQt5.Qt import QPixmap, QPainter
+from PyQt5 import QtCore, QtGui, QtWidgets
 from dll_func import *
 
 
-class MainWindow(QMainWindow, Ui_MainWindow):
-    squareSize = 73
-    boardEdge = 20
-    boardWidth = boardEdge + squareSize * 9 + boardEdge
-    boardHeight = boardEdge + squareSize * 10 + boardEdge
-    # 棋子编号
-    # enum ENUM_PIECE
-    # {
-    #     PIECE_JIANG = 0,
-    #     PIECE_SHI = 1,
-    #     PIECE_XIANG = 2,
-    #     PIECE_MA = 3,
-    #     PIECE_JU = 4,
-    #     PIECE_PAO = 5,
-    #     PIECE_BING = 6,
-    # };
+class QChessBoard(QWidget):
+    squareSize = 72
+    boardEdge = 8
+    # boardWidth = boardEdge + squareSize * 9 + boardEdge
+    # boardHeight = boardEdge + squareSize * 10 + boardEdge
     pcStr = ('K', 'A', 'B', 'N', 'R', 'C', 'P', '',
              'RK', 'RA', 'RB', 'RN', 'RR', 'RC', 'RP', '',
              'BK', 'BA', 'BB', 'BN', 'BR', 'BC', 'BP', '')
-    # playerStr = ('R', 'B')
     selectedStr = ('', 'S')
     pcPath = 'images\\IMAGES_X\\COMIC\\'
     boardJpg = None
+    validSquares = (
+        51, 52, 53, 54, 55, 56, 57, 58, 59,
+        67, 68, 69, 70, 71, 72, 73, 74, 75,
+        83, 84, 85, 86, 87, 88, 89, 90, 91,
+        99, 100, 101, 102, 103, 104, 105, 106, 107,
+        115, 116, 117, 118, 119, 120, 121, 122, 123,
+        131, 132, 133, 134, 135, 136, 137, 138, 139,
+        147, 148, 149, 150, 151, 152, 153, 154, 155,
+        163, 164, 165, 166, 167, 168, 169, 170, 171,
+        179, 180, 181, 182, 183, 184, 185, 186, 187,
+        195, 196, 197, 198, 199, 200, 201, 202, 203,)
 
     def __init__(self, parent=None):
-        super(MainWindow, self).__init__(parent)
-        self.setupUi(self)
-        self.setWindowTitle('中国象棋')
+        super().__init__(parent)
         self.boardJpg = QtGui.QPixmap('images\\IMAGES_X\\WOOD.JPG')
-        self.labelImg.setText('')
-        self.labelImg.resize(self.boardJpg.width(), self.boardJpg.height())
-        # self.labelImg.setPixmap(self.boardJpg)
         self.painter = QPainter()
 
+    def mousePressEvent(self, e: QtGui.QMouseEvent):
+        super().mousePressEvent(e)
+        x, y = e.x(), e.y()
+        x = round((x - 40) / self.squareSize)
+        y = round((y - 40) / self.squareSize)
+        print(x, y)
+
     def paintEvent(self, e):
-        super(MainWindow, self).paintEvent(e)
+        super().paintEvent(e)
         squares = getSquares()
         sqSelected = getSqSelected()
         self.painter.begin(self)
-        bx = self.labelImg.geometry().x()
-        by = self.labelImg.geometry().y()
-        self.painter.drawPixmap(bx + 5, by + 5, self.boardJpg)
-        for i in range(51, 204):
+        self.painter.drawPixmap(0, 0, self.boardJpg)
+        for i in self.validSquares:
             pc = squares[i]
             gifPath = None
             if pc != 0:
@@ -60,12 +57,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             if gifPath:
                 gifPath += '.GIF'
                 gif = QtGui.QPixmap(gifPath)
-                # boardWidth = boardEdge + squareSize * 9 + boardEdge
-                # boardHeight = boardEdge + squareSize * 10 + boardEdge
                 x = i % 16 - 3
                 y = i // 16 - 3
                 px = self.boardEdge + self.squareSize * x
                 py = self.boardEdge + self.squareSize * y
                 self.painter.drawPixmap(px, py, gif)
-
         self.painter.end()

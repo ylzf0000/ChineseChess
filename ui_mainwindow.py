@@ -13,14 +13,16 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(800, 600)
+        MainWindow.resize(1058, 790)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.horizontalLayout = QtWidgets.QHBoxLayout(self.centralwidget)
         self.horizontalLayout.setObjectName("horizontalLayout")
-        self.labelImg = QtWidgets.QLabel(self.centralwidget)
-        self.labelImg.setObjectName("labelImg")
-        self.horizontalLayout.addWidget(self.labelImg)
+        self.widgetBoard = QChessBoard(self.centralwidget)
+        self.widgetBoard.setMinimumSize(QtCore.QSize(665, 737))
+        self.widgetBoard.setMaximumSize(QtCore.QSize(665, 737))
+        self.widgetBoard.setObjectName("widgetBoard")
+        self.horizontalLayout.addWidget(self.widgetBoard)
         self.verticalLayout = QtWidgets.QVBoxLayout()
         self.verticalLayout.setObjectName("verticalLayout")
         self.pushButton = QtWidgets.QPushButton(self.centralwidget)
@@ -32,7 +34,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout.addLayout(self.verticalLayout)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 23))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 1058, 23))
         self.menubar.setObjectName("menubar")
         self.menu = QtWidgets.QMenu(self.menubar)
         self.menu.setObjectName("menu")
@@ -54,9 +56,9 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
-        self.labelImg.setText(_translate("MainWindow", "TextLabel"))
         self.pushButton.setText(_translate("MainWindow", "PushButton"))
         self.pushButton_2.setText(_translate("MainWindow", "PushButton"))
         self.menu.setTitle(_translate("MainWindow", "菜单"))
         self.actionRed.setText(_translate("MainWindow", "Red"))
         self.actionBlack.setText(_translate("MainWindow", "Black"))
+from qchessboard import QChessBoard
