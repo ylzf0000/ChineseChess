@@ -7,7 +7,7 @@ void Board::Init()
 	player = 0;
 	valRed = 0;
 	valBlack = 0;
-	depth = 0;
+	nStep = 0;
 	sqSelected = 0;
 	mvLast = 0;
 	memset(squares, 0, sizeof(squares));
@@ -54,7 +54,7 @@ bool Board::MakeMove(int mv, int& pcKilled)
 		return false;
 	}
 	ChangeSide();
-	++depth;
+	++nStep;
 	return true;
 }
 
@@ -269,7 +269,7 @@ bool Board::IsLegalMove(int mv) const
 	case PIECE_BING:
 	{
 		if (isAwayHomeHalf(dst, player) &&
-			(dst == src - 1 || dst == depth + 1))
+			(dst == src - 1 || dst == nStep + 1))
 			return true;
 		return dst == squareForward(src, player);
 	}

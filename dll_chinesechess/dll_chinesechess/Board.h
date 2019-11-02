@@ -11,7 +11,7 @@ struct Board
 	int player;//0红1黑
 	BYTE squares[256];
 	int valRed, valBlack;
-	int depth;// 距离根节点的步数
+	int nStep;// 距离根节点的步数
 
 	int sqSelected;// 选中的格子，上一步棋
 	int mvLast;
@@ -27,7 +27,7 @@ struct Board
 	bool IsMate();// 判断是否被杀
 	void UndoMakeMove(int mv, int pcKilled)
 	{
-		--depth;
+		--nStep;
 		ChangeSide();
 		UndoMovePiece(mv, pcKilled);
 	}

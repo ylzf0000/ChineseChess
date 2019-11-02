@@ -56,11 +56,11 @@ int SearchFull(int alpha, int beta, int depth)
 
 	// 5. 所有走法都搜索完了，把最佳走法(不能是Alpha走法)保存到历史表，返回最佳值
 	if (valBest == -MATE_VALUE)
-		return board.depth - MATE_VALUE;
+		return board.nStep - MATE_VALUE;
 	if (mvBest)
 	{
 		sc.historyTable[mvBest] += depth * depth;
-		if (board.depth == 0)
+		if (board.nStep == 0)
 			sc.mvResult = mvBest;
 	}
 	return valBest;
@@ -70,7 +70,7 @@ void SearchMain()
 {
 	memset(sc.historyTable, 0, sizeof(sc.historyTable));
 	Board& board = Board::Instance();
-	board.depth = 0;
+	board.nStep = 0;
 	int t = clock();
 	for (int i = 1; i <= MAX_DEPTH; ++i)
 	{
