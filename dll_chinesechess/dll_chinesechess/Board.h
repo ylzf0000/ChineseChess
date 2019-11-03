@@ -22,10 +22,12 @@ struct Board
 	int MovePiece(int mv);
 	void UndoMovePiece(int mv, int pcKilled);
 	bool MakeMove(int mv, int& pcKilled);
+	int PlayerMove_Unchecked(int mv);//0走法被将军 1可以走且已经走
+	int PlayerMove_Checked(int mv); //-1不合法 0走法被将军 1可以走且已经走
 	int GenerateMoves(int* mvs)const;
 	bool IsLegalMove(int mv)const;
 	bool IsChecked()const;// 判断是否被将军
-	bool IsMate();// 判断是否被杀
+	bool IsMate(); //判断是否被将死
 	void UndoMakeMove(int mv, int pcKilled)
 	{
 		--nStep;

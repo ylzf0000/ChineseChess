@@ -5,13 +5,17 @@
 Board& board = Board::Instance();
 extern "C"
 {
+	DLL_EXPORT void start()
+	{
+		board.Init();
+	}
 	DLL_EXPORT void aiMove()
 	{
 		ResponseMove();
 	}
-	DLL_EXPORT void start()
+	DLL_EXPORT int playerMove(int src, int dst)
 	{
-		board.Init();
+		return board.PlayerMove_Checked(getMove(src, dst));
 	}
 	DLL_EXPORT int getPlayer()
 	{
@@ -37,6 +41,13 @@ extern "C"
 	{
 		return board.sqSelected;
 	}
+	DLL_EXPORT int setSqselected(int pos)
+	{
+		int ret = isSelfChess(board.player, board.squares[pos]);
+		if (ret)
+			board.sqSelected = pos;
+		return ret;
+	}
 	DLL_EXPORT int getMvLast()
 	{
 		return board.mvLast;
@@ -48,19 +59,19 @@ extern "C"
 }
 
 
-BOOL APIENTRY DllMain( HMODULE hModule,
-                       DWORD  ul_reason_for_call,
-                       LPVOID lpReserved
-                     )
+BOOL APIENTRY DllMain(HMODULE hModule,
+	DWORD  ul_reason_for_call,
+	LPVOID lpReserved
+)
 {
-    switch (ul_reason_for_call)
-    {
-    case DLL_PROCESS_ATTACH:
-    case DLL_THREAD_ATTACH:
-    case DLL_THREAD_DETACH:
-    case DLL_PROCESS_DETACH:
-        break;
-    }
-    return TRUE;
+	switch (ul_reason_for_call)
+	{
+	case DLL_PROCESS_ATTACH:
+	case DLL_THREAD_ATTACH:
+	case DLL_THREAD_DETACH:
+	case DLL_PROCESS_DETACH:
+		break;
+	}
+	return TRUE;
 }
 

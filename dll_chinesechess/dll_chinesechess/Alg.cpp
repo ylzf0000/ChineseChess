@@ -40,7 +40,7 @@ int SearchFull(int alpha, int beta, int depth)
 			if (val > valBest)
 			{
 				valBest = val;
-				if (val >= valBest)
+				if (val >= beta)
 				{
 					mvBest = mv;
 					break;
@@ -88,10 +88,11 @@ int ResponseMove()
 {
 	SearchMain();
 	Board& board = Board::Instance();
-	int pcKilled;
-	board.MakeMove(sc.mvResult, pcKilled);
-	board.mvLast = sc.mvResult;
-	return 0;
+	board.PlayerMove_Unchecked(sc.mvResult);
+	//int pcKilled;
+	//board.MakeMove(sc.mvResult, pcKilled);
+	//board.mvLast = sc.mvResult;
+	return sc.mvResult;
 }
 
 

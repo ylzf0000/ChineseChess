@@ -58,6 +58,26 @@ bool Board::MakeMove(int mv, int& pcKilled)
 	return true;
 }
 
+int Board::PlayerMove_Unchecked(int mv)
+{
+	int pcKilled;
+	if (MakeMove(mv, pcKilled))
+	{
+		mvLast = mv;
+		return 1;
+	}
+	return 0;
+
+}
+
+int Board::PlayerMove_Checked(int mv)
+{
+	if (IsLegalMove(mv))
+		return PlayerMove_Unchecked(mv);
+	else
+		return -1;
+}
+
 int Board::GenerateMoves(int* mvs) const
 {
 	int nGenMoves = 0;
@@ -342,6 +362,7 @@ bool Board::IsChecked() const
 	return false;
 }
 
+// 判断是否被将死
 bool Board::IsMate()
 {
 	int mvs[MAX_GEN_MOVES];
@@ -349,12 +370,12 @@ bool Board::IsMate()
 	for (int i = 0; i < n; ++i)
 	{
 		int pcKilled = MovePiece(mvs[i]);
-		if (!IsChecked())
+		if (!IsChecked()) // 没有被将军，说明还有活路
 		{
 			UndoMovePiece(mvs[i], pcKilled);
 			return false;
 		}
-		else
+		else // 被将军了，若是任意走一步都被将军，则已被将死, return true
 			UndoMovePiece(mvs[i], pcKilled);
 	}
 	return true;

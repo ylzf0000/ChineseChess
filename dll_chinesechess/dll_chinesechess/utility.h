@@ -294,6 +294,11 @@ constexpr BYTE piecePosValue[7][256] = {
   }
 };
 
+#define DLL_EXPORT		__declspec(dllexport)
+#define BEGIN_EXTERNC	extern "C"{
+#define END_EXTERNC		}
+BEGIN_EXTERNC
+
 // 判断棋子是否在棋盘中
 inline bool isInBoard(int pos)
 {
@@ -320,12 +325,12 @@ inline int getPosY(int pos)
 }
 
 // 根据纵坐标和横坐标获得格子
-inline int getPos_XY(int x, int y)
+DLL_EXPORT inline int getPos_XY(int x, int y)
 {
 	return x + (y << 4);
 }
 
-// 翻转格子?
+// 翻转格子(最后一列多余，所以是255 - 1)
 inline int flipSquare(int pos)
 {
 	return 254 - pos;
@@ -415,14 +420,14 @@ inline bool isSameX(int src, int dst)
 }
 
 // 获得红黑标记(红子是8，黑子是16)
-inline int sideTag(int sd)
+inline int sideTag(int player)
 {
-	return 8 + (sd << 3);
+	return 8 + (player << 3);
 }
 
 // 获得对方红黑标记
-inline int oppSideTag(int sd) {
-	return 16 - (sd << 3);
+inline int oppSideTag(int player) {
+	return 16 - (player << 3);
 }
 
 // 获得走法的起点
@@ -449,3 +454,13 @@ inline int mirrorXMove(int mv)
 	return getMove(mirrorXSquare(getSrc(mv)), mirrorXSquare(getDst(mv)));
 }
 
+DLL_EXPORT inline BOOL isSelfChess(int player, int pc)
+{
+	return (sideTag(player) & pc) != 0;
+}
+
+DLL_EXPORT inline BOOL isOppChess(int player, int pc)
+{
+	return (oppSideTag(player) & pc) != 0;
+}
+END_EXTERNC

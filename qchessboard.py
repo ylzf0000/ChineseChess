@@ -31,13 +31,37 @@ class QChessBoard(QWidget):
         super().__init__(parent)
         self.boardJpg = QtGui.QPixmap('images\\IMAGES_X\\WOOD.JPG')
         self.painter = QPainter()
+        self.mv1 = None
+        self.mv2 = None
 
     def mousePressEvent(self, e: QtGui.QMouseEvent):
         super().mousePressEvent(e)
         x, y = e.x(), e.y()
-        x = round((x - 40) / self.squareSize)
-        y = round((y - 40) / self.squareSize)
-        print(x, y)
+        x = round((x - 40) / self.squareSize) + 3
+        y = round((y - 40) / self.squareSize) + 3
+        pos = getPos_XY(x, y)
+        player = getPlayer()
+        pc = getSquares()[pos]
+        if isSelfChess(player, pc):
+            setSqselected(pos)
+            self.repaint()
+            return
+
+        sqSelected = getSqSelected()
+        if sqSelected != 0 and not isSelfChess(player, pc):
+            print(sqSelected, pos)
+            ret = playerMove(sqSelected, pos)
+            self.mv1 = sqSelected
+            self.mv2 = pos
+            self.repaint()
+            aiMove()
+            self.repaint()
+
+    def printBoard(self):
+        for y in range(16):
+            for x in range(16):
+                print(getSquares()[getPos_XY(x, y)], end=',')
+            print()
 
     def paintEvent(self, e):
         super().paintEvent(e)
@@ -51,7 +75,7 @@ class QChessBoard(QWidget):
             if pc != 0:
                 gifPath = self.pcPath + self.pcStr[pc] + self.selectedStr[int(sqSelected == i)]
             elif sqSelected == i:
-                gifPath = pcPath + 'OOS'
+                gifPath = self.pcPath + 'OOS'
             else:
                 continue
             if gifPath:
@@ -62,4 +86,8 @@ class QChessBoard(QWidget):
                 px = self.boardEdge + self.squareSize * x
                 py = self.boardEdge + self.squareSize * y
                 self.painter.drawPixmap(px, py, gif)
+        # if mv1 != 0:
+        #     gifPath = self.pcPath + 'OOS.GIF'
+        #     x = mv1 % 16 - 3
+        #     y = mv1 // 16 - 3
         self.painter.end()
