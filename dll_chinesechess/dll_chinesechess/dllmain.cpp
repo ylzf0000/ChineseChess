@@ -56,6 +56,10 @@ extern "C"
 	{
 		return board.isFlipped;
 	}
+	DLL_EXPORT BOOL isMate()
+	{
+		return board.IsMate();
+	}
 }
 
 

@@ -13,7 +13,7 @@ int searchFull(int alpha, int beta, int depth);
 // 迭代加深搜索过程
 void searchMain();
 
-// 电脑回应一步棋
+// 电脑回应一步棋,返回-1代表游戏结束
 int responseMove();
 
 

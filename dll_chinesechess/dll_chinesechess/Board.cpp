@@ -309,6 +309,8 @@ bool Board::IsChecked() const
 		if (squares[src] == pcSelfSide + PIECE_JIANG)
 			break;
 
+	if (src == 256)
+		return false;
 	// 1. 判断是否被对方的兵(卒)将军
 	if (squares[squareForward(src, player)] == pcOppSide + PIECE_BING)
 		return true;

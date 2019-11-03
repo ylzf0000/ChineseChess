@@ -96,3 +96,6 @@ def setMaxDepth(d):
 
 def getMaxDepth():
     return dll_cc.getMaxDepth()
+
+def isMate():
+    return dll_cc.isMate()

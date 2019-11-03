@@ -89,9 +89,8 @@ int responseMove()
 	searchMain();
 	Board& board = Board::Instance();
 	board.PlayerMove_Unchecked(sc.mvResult);
-	//int pcKilled;
-	//board.MakeMove(sc.mvResult, pcKilled);
-	//board.mvLast = sc.mvResult;
+	if (board.IsMate())
+		return -1;
 	return sc.mvResult;
 }
 

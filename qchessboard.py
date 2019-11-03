@@ -1,6 +1,6 @@
-from PyQt5.QtWidgets import QWidget
-from PyQt5.Qt import QPixmap, QPainter
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtWidgets import QWidget, QMessageBox
+from PyQt5.Qt import QPixmap, QPainter
 from dll_func import *
 
 
@@ -54,8 +54,15 @@ class QChessBoard(QWidget):
             self.mv1 = sqSelected
             self.mv2 = pos
             self.repaint()
+            if isMate():
+                QMessageBox.information(self, '游戏结束！', '游戏结束！')
+                return
             aiMove()
             self.repaint()
+            if isMate():
+                QMessageBox.information(self, '游戏结束！', '游戏结束！')
+                return
+
 
     def printBoard(self):
         for y in range(16):
