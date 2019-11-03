@@ -51,6 +51,10 @@ class QChessBoard(QWidget):
         if sqSelected != 0 and not isSelfChess(player, pc):
             print(sqSelected, pos)
             ret = playerMove(sqSelected, pos)
+            if ret != 1:
+                setSqselected(0)
+                return
+            setSqselected(0)
             self.mv1 = sqSelected
             self.mv2 = pos
             self.repaint()
@@ -58,6 +62,7 @@ class QChessBoard(QWidget):
                 QMessageBox.information(self, '游戏结束！', '游戏结束！')
                 return
             aiMove()
+            setSqselected(0)
             self.repaint()
             if isMate():
                 QMessageBox.information(self, '游戏结束！', '游戏结束！')
