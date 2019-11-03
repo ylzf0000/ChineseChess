@@ -90,3 +90,9 @@ def isOppChess(player, pc):
 
 def getPos_XY(x, y):
     return dll_cc.getPos_XY(x, y)
+
+def setMaxDepth(d):
+    dll_cc.setMaxDepth(d)
+
+def getMaxDepth():
+    return dll_cc.getMaxDepth()

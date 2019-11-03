@@ -7,7 +7,7 @@
 using namespace std;
 Search sc;
 // 超出边界(Fail-Soft)的Alpha-Beta搜索过程
-int SearchFull(int alpha, int beta, int depth)
+int searchFull(int alpha, int beta, int depth)
 {
 	int mvs[MAX_GEN_MOVES];
 	Board& board = Board::Instance();
@@ -33,7 +33,7 @@ int SearchFull(int alpha, int beta, int depth)
 		int pcKilled;
 		if (board.MakeMove(mv, pcKilled))
 		{
-			int val = -SearchFull(-beta, -alpha, depth - 1);
+			int val = -searchFull(-beta, -alpha, depth - 1);
 			board.UndoMakeMove(mv, pcKilled);
 
 			// 5. 进行Alpha-Beta大小判断和截断
@@ -66,27 +66,27 @@ int SearchFull(int alpha, int beta, int depth)
 	return valBest;
 }
 
-void SearchMain()
+void searchMain()
 {
 	memset(sc.historyTable, 0, sizeof(sc.historyTable));
 	Board& board = Board::Instance();
 	board.nStep = 0;
 	int t = clock();
-	for (int i = 1; i <= MAX_DEPTH; ++i)
+	for (int i = 1; i <= sc.MAX_DEPTH; ++i)
 	{
-		int val = SearchFull(-MATE_VALUE, MATE_VALUE, i);
+		int val = searchFull(-MATE_VALUE, MATE_VALUE, i);
 		if (val > WIN_VALUE || val < -WIN_VALUE)
 			break;
 
-		if (clock() - t > CLOCKS_PER_SEC)
-			break;
+		//if (clock() - t > CLOCKS_PER_SEC)
+		//	break;
 	}
 
 }
 
-int ResponseMove()
+int responseMove()
 {
-	SearchMain();
+	searchMain();
 	Board& board = Board::Instance();
 	board.PlayerMove_Unchecked(sc.mvResult);
 	//int pcKilled;
@@ -95,4 +95,17 @@ int ResponseMove()
 	return sc.mvResult;
 }
 
+BEGIN_EXTERNC
+
+DLL_EXPORT void setMaxDepth(int d)
+{
+	if (d > 0)
+		sc.MAX_DEPTH = d;
+}
+DLL_EXPORT int getMaxDepth()
+{
+	return sc.MAX_DEPTH;
+}
+
+END_EXTERNC
 

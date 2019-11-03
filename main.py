@@ -7,6 +7,7 @@ from mainwindow import *
 if __name__ == '__main__':
     mode = 'd'
     init_DLL(mode)
+    setMaxDepth(5)
     start()
     app = QApplication(sys.argv)
     mainWindow = MainWindow()

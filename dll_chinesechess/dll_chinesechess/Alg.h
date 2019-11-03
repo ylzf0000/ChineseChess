@@ -5,12 +5,16 @@ struct Search
 {
 	int mvResult;
 	int historyTable[65536];
+	int MAX_DEPTH = 4;
 };
 // 超出边界(Fail-Soft)的Alpha-Beta搜索过程
-int SearchFull(int alpha, int beta, int depth);
+int searchFull(int alpha, int beta, int depth);
 
 // 迭代加深搜索过程
-void SearchMain();
+void searchMain();
 
 // 电脑回应一步棋
-int ResponseMove();
+int responseMove();
+
+
+ //void setMaxDepth(int d);

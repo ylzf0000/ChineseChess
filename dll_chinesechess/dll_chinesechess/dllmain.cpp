@@ -11,7 +11,7 @@ extern "C"
 	}
 	DLL_EXPORT void aiMove()
 	{
-		ResponseMove();
+		responseMove();
 	}
 	DLL_EXPORT int playerMove(int src, int dst)
 	{
