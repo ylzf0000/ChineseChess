@@ -77,7 +77,7 @@ void searchMain()
 		int val = searchFull(-MATE_VALUE, MATE_VALUE, i);
 		if (val > WIN_VALUE || val < -WIN_VALUE)
 			break;
-		if (clock() - t > CLOCKS_PER_SEC)
+		if (clock() - t > 2 * CLOCKS_PER_SEC)
 			break;
 	}
 

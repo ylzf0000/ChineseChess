@@ -6,9 +6,9 @@ from mainwindow import *
 
 if __name__ == '__main__':
     # 'd'使用debug模式的DLL,'r'使用release模式的DLL
-    mode = 'd'
+    mode = 'r'
     init_DLL(mode)
-    setMaxDepth(32)
+    setMaxDepth(4)
     start()
     app = QApplication(sys.argv)
     mainWindow = MainWindow()
