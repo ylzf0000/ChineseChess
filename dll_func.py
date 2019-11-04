@@ -4,10 +4,13 @@ from ctypes import *
 dll_cc = None
 
 
-def init_DLL(mode):
-    dll_path = "dll_chinesechess\\x64\\Debug\\dll_chinesechess.dll" \
-        if mode == 'd' else \
-        "dll_chinesechess\\x64\\Release\\dll_chinesechess.dll"
+def init_DLL(platform, cfg):
+    platform = 'x64' if platform == '64' else 'Win32'
+    cfg = 'Release' if cfg == 'r' else 'Debug'
+    dll_path = 'dll_chinesechess/' + platform + '/' + cfg + '/dll_chinesechess.dll'
+    # dll_path = "dll_chinesechess\\x64\\Debug\\dll_chinesechess.dll" \
+    #     if mode == 'd' else \
+    #     "dll_chinesechess\\x64\\Release\\dll_chinesechess.dll"
     global dll_cc
     dll_cc = CDLL(dll_path)
     # 同步C函数签名
@@ -91,11 +94,14 @@ def isOppChess(player, pc):
 def getPos_XY(x, y):
     return dll_cc.getPos_XY(x, y)
 
+
 def setMaxDepth(d):
     dll_cc.setMaxDepth(d)
 
+
 def getMaxDepth():
     return dll_cc.getMaxDepth()
+
 
 def isMate():
     return dll_cc.isMate()
