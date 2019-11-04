@@ -124,3 +124,11 @@ dll_chinesechess/x64/Debug/dll_chinesechess.ilk
 dll_chinesechess/x64/Release/dll_chinesechess.exp
 dll_chinesechess/x64/Release/dll_chinesechess.iobj
 dll_chinesechess/x64/Release/dll_chinesechess.ipdb
+*.exp
+*.ilk
+dll_chinesechess/dll_chinesechess/Release/vc142.pdb
+*.iobj
+*.ipdb
+*.idb
+dll_chinesechess/dll_chinesechess/Win32/Debug/vc142.pdb
+dll_chinesechess/dll_chinesechess/Win32/Release/vc142.pdb
