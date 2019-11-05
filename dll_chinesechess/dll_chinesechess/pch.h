@@ -12,6 +12,7 @@
 #include <time.h>
 #include <algorithm>
 #include <cstring>
+#include <vector>
 #include "framework.h"
 #include "utility.h"
 #endif //PCH_H

@@ -2,7 +2,7 @@
 #include "Board.h"
 #include <cstring>
 using namespace std;
-void Board::Init()
+void Board::Startup()
 {
 	player = 0;
 	valRed = 0;
@@ -10,6 +10,7 @@ void Board::Init()
 	nStep = 0;
 	sqSelected = 0;
 	mvLast = 0;
+	mvsList.reserve(256);
 	memset(squares, 0, sizeof(squares));
 	for (int pos = 0; pos < 256; ++pos)
 	{

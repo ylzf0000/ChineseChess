@@ -1,6 +1,7 @@
 #pragma once
 #include "pch.h"
 #include "alg_custom.h"
+#define ALG_CUSTOM
 struct Board
 {
 	static Board& Instance()
@@ -8,16 +9,26 @@ struct Board
 		static Board board;
 		return board;
 	}
-	int player;//0红1黑
-	BYTE squares[256];
-	int valRed, valBlack;
-	int nStep;// 距离根节点的步数
+	int player;					// 0红1黑
+	BYTE squares[256];			// 棋盘上的棋子
+#ifdef ALG_CUSTOM
+	int valRed, valBlack;		// 红、黑双方的子力价值
+#endif // ALG_CUSTOM
+
+	int nStep;					// 距离根节点的步数
+	std::vector<MoveStruct> mvsList; // 历史走法信息列表
+	ZobristStruct zobr;			// Zobrist
+	void SetIrrev()			// 清空(初始化)历史走法信息
+	{
+		mvsList.clear();
+		mvsList.push_back({ 0,0,IsChecked(),zobr.dwKey });
+	}
 
 	int sqSelected;// 选中的格子，上一步棋
 	int mvLast;
 	BOOL isFlipped;// 是否翻转棋盘
 
-	void Init();// 初始化棋盘
+	void Startup();// 初始化棋盘
 	int MovePiece(int mv);
 	void UndoMovePiece(int mv, int pcKilled);
 	bool MakeMove(int mv, int& pcKilled);
@@ -35,26 +46,41 @@ struct Board
 	}
 	void ChangeSide() {
 		player = 1 - player;
+		zobr.Xor(Zobrist::Instance().Player);
 	}
 	// 在棋盘上放一枚棋子
 	void AddPiece(int pos, int pc)
 	{
 		squares[pos] = pc;
+
 		// 红方加分，黑方(注意"cucvlPiecePos"取值要颠倒)减分
 		if (pc < 16)
+		{
+			zobr.Xor(Zobrist::Instance().Table[pc - 8][pos]);
+#ifdef ALG_CUSTOM
 			valRed += piecePosValue[pc - 8][pos];
+#endif // ALG_CUSTOM
+		}
 		else
+		{
+			zobr.Xor(Zobrist::Instance().Table[pc - 9][pos]);
+#ifdef ALG_CUSTOM
 			valBlack += piecePosValue[pc - 16][flipSquare(pos)];
+#endif // ALG_CUSTOM
+		}
+
 	}
 	// 从棋盘上拿走一枚棋子
 	void DelPiece(int pos, int pc)
 	{
 		squares[pos] = 0;
+#ifdef ALG_CUSTOM
 		// 红方减分，黑方(注意"cucvlPiecePos"取值要颠倒)加分
 		if (pc < 16)
 			valRed -= piecePosValue[pc - 8][pos];
 		else
 			valBlack -= piecePosValue[pc - 16][flipSquare(pos)];
+#endif // ALG_CUSTOM
 	}
 	int Evaluate() const
 	{

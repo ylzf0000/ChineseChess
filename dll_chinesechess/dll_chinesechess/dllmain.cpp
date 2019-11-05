@@ -9,7 +9,7 @@ Board& board = Board::Instance();
 BEGIN_EXTERNC
 DLL_EXPORT void start()
 {
-	board.Init();
+	board.Startup();
 }
 DLL_EXPORT void aiMove()
 {

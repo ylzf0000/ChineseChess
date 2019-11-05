@@ -30,9 +30,6 @@
     <ClInclude Include="alg_custom.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="RC4Struct.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -45,9 +42,6 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="alg_custom.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="RC4Struct.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
