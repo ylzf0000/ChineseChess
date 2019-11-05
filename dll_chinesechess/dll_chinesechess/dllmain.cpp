@@ -1,8 +1,8 @@
 ﻿// dllmain.cpp : 定义 DLL 应用程序的入口点。
 #include "pch.h"
-#include "Alg.h"
+#include "alg_custom.h"
 #include "utility.h"
-
+#include "Board.h"
 #define DLL_EXPORT __declspec(dllexport)
 Board& board = Board::Instance();
 

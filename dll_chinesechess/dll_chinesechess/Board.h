@@ -1,7 +1,6 @@
 #pragma once
 #include "pch.h"
-#include "utility.h"
-
+#include "alg_custom.h"
 struct Board
 {
 	static Board& Instance()

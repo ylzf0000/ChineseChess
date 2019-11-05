@@ -8,6 +8,10 @@
 #define PCH_H
 
 // 添加要在此处预编译的标头
+#include <windows.h>
+#include <time.h>
+#include <algorithm>
+#include <cstring>
 #include "framework.h"
-
+#include "utility.h"
 #endif //PCH_H

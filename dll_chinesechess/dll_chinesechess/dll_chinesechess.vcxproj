@@ -159,14 +159,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Alg.h" />
+    <ClInclude Include="alg_custom.h" />
     <ClInclude Include="Board.h" />
     <ClInclude Include="framework.h" />
+    <ClInclude Include="RC4Struct.h" />
     <ClInclude Include="utility.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Alg.cpp" />
+    <ClCompile Include="alg_custom.cpp" />
     <ClCompile Include="Board.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="pch.cpp">
@@ -175,6 +176,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="RC4Struct.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />

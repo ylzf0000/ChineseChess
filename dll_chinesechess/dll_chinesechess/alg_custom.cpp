@@ -1,9 +1,7 @@
 #include "pch.h"
-#include "Alg.h"
-#include <algorithm>
-#include <cstring>
-#include <windows.h>
-#include <time.h>
+#include "alg_custom.h"
+#include "Board.h"
+
 using namespace std;
 Search sc;
 // 超出边界(Fail-Soft)的Alpha-Beta搜索过程

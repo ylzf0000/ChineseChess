@@ -1,4 +1,4 @@
-from AlphaZeroAgent import AlphaZeroAgent
+from RL.AlphaZeroAgent import AlphaZeroAgent
 
 
 
