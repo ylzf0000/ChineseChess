@@ -11,9 +11,9 @@ DLL_EXPORT void start()
 {
 	board.Startup();
 }
-DLL_EXPORT void aiMove()
+DLL_EXPORT int aiMove()
 {
-	responseMove();
+	return responseMove();
 }
 DLL_EXPORT int playerMove(int src, int dst)
 {
@@ -39,28 +39,17 @@ DLL_EXPORT int getNStep()
 {
 	return board.nStep;
 }
-DLL_EXPORT int getSqSelected()
-{
-	return board.sqSelected;
-}
-DLL_EXPORT int setSqselected(int pos)
-{
-	int ret = isSelfChess(board.player, board.squares[pos]);
-	if (ret)
-		board.sqSelected = pos;
-	return ret;
-}
-DLL_EXPORT int getMvLast()
-{
-	return board.mvLast;
-}
-DLL_EXPORT int isFlipped()
-{
-	return board.isFlipped;
-}
 DLL_EXPORT BOOL isMate()
 {
 	return board.IsMate();
+}
+DLL_EXPORT int getRepStatus()
+{
+	return board.RepStatus();
+}
+DLL_EXPORT int getGameState()
+{
+	return board.GameState();
 }
 END_EXTERNC
 

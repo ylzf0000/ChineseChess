@@ -293,13 +293,13 @@ struct MoveStruct
 BEGIN_EXTERNC
 
 // 判断棋子是否在棋盘中
-inline bool isInBoard(int pos)
+inline BOOL isInBoard(int pos)
 {
 	return inBoard[pos];
 }
 
 // 判断棋子是否在九宫中
-inline bool isInJiuGong(int pos)
+inline BOOL isInJiuGong(int pos)
 {
 	return inJiuGong[pos];
 }
@@ -353,19 +353,19 @@ inline int squareForward(int pos, int sd) {
 }
 
 // 走法是否符合帅(将)的步长
-inline bool isJiangMoveLegal(int src, int dst)
+inline BOOL isJiangMoveLegal(int src, int dst)
 {
 	return legalMove[dst - src + 256] == 1;
 }
 
 // 走法是否符合仕(士)的步长
-inline bool isShiMoveLegal(int src, int dst)
+inline BOOL isShiMoveLegal(int src, int dst)
 {
 	return legalMove[dst - src + 256] == 2;
 }
 
 // 走法是否符合相(象)的步长
-inline bool isXiangMoveLegal(int src, int dst)
+inline BOOL isXiangMoveLegal(int src, int dst)
 {
 	return legalMove[dst - src + 256] == 3;
 }
@@ -383,66 +383,67 @@ inline int getMaPin(int src, int dst)
 }
 
 // 是否未过河 sd红0黑1
-inline bool isHomeHalf(int pos, int sd)
+inline BOOL isHomeHalf(int pos, int sd)
 {
 	return (pos & 0x80) != (sd << 7);
 }
 
 // 是否已过河
-inline bool isAwayHomeHalf(int pos, int sd)
+inline BOOL isAwayHomeHalf(int pos, int sd)
 {
 	return (pos & 0x80) == (sd << 7);
 }
 
 // 是否在河的同一边
-inline bool isSameHalf(int src, int dst)
+inline BOOL isSameHalf(int src, int dst)
 {
 	return ((src ^ dst) & 0x80) == 0;
 }
 
 // 是否在同一行
-inline bool isSameY(int src, int dst)
+inline BOOL isSameY(int src, int dst)
 {
 	return ((src ^ dst) & 0xf0) == 0;
 }
 
 // 是否在同一列
-inline bool isSameX(int src, int dst)
+inline BOOL isSameX(int src, int dst)
 {
 	return ((src ^ dst) & 0x0f) == 0;
 }
 
 // 获得红黑标记(红子是8，黑子是16)
-inline int sideTag(int player)
+DLL_EXPORT inline int sideTag(int player)
 {
 	return 8 + (player << 3);
 }
 
 // 获得对方红黑标记
-inline int oppSideTag(int player) {
+DLL_EXPORT inline int oppSideTag(int player)
+{
 	return 16 - (player << 3);
 }
 
 // 获得走法的起点
-inline int getSrc(int mv)
+DLL_EXPORT inline int getSrc(int mv)
 {
 	return mv & 255;
 }
 
 // 获得走法的终点
-inline int getDst(int mv)
+DLL_EXPORT inline int getDst(int mv)
 {
 	return mv >> 8;
 }
 
 // 根据起点和终点获得走法
-inline int getMove(int src, int dst)
+DLL_EXPORT inline int getMove(int src, int dst)
 {
 	return src + (dst << 8);
 }
 
 // 走法水平镜像
-inline int mirrorXMove(int mv)
+DLL_EXPORT inline int mirrorXMove(int mv)
 {
 	return getMove(mirrorXSquare(getSrc(mv)), mirrorXSquare(getDst(mv)));
 }

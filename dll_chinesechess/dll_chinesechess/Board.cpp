@@ -8,9 +8,8 @@ void Board::Startup()
 	valRed = 0;
 	valBlack = 0;
 	nStep = 0;
-	sqSelected = 0;
-	mvLast = 0;
 	mvsList.reserve(256);
+	SetIrrev();
 	zobr.InitZero();
 	memset(squares, 0, sizeof(squares));
 	for (int pos = 0; pos < 256; ++pos)
@@ -66,7 +65,6 @@ int Board::PlayerMove_Unchecked(int mv)
 	int pcKilled;
 	if (MakeMove(mv, pcKilled))
 	{
-		mvLast = mv;
 		return 1;
 	}
 	return 0;
@@ -81,9 +79,9 @@ int Board::PlayerMove_Checked(int mv)
 		return -1;
 }
 
-int Board::GenerateMoves(int* mvs, BOOL isKill) const
+int Board::GenerateMoves(std::vector<int>& mvList, BOOL isKill) const
 {
-	int nGenMoves = 0;
+	mvList.clear();
 	int pcSelfSide = sideTag(player);
 	int pcOppSide = oppSideTag(player);
 	for (int src = 0; src < 256; ++src)
@@ -102,7 +100,7 @@ int Board::GenerateMoves(int* mvs, BOOL isKill) const
 					continue;
 				int pcDst = squares[dst];
 				if ((pcDst & pcSelfSide) == 0)
-					mvs[nGenMoves++] = getMove(src, dst);
+					mvList.push_back(getMove(src, dst));
 			}
 			break;
 		}
@@ -115,7 +113,7 @@ int Board::GenerateMoves(int* mvs, BOOL isKill) const
 					continue;
 				int pcDst = squares[dst];
 				if ((pcDst & pcSelfSide) == 0)
-					mvs[nGenMoves++] = getMove(src, dst);
+					mvList.push_back(getMove(src, dst));
 			}
 			break;
 		}
@@ -129,7 +127,7 @@ int Board::GenerateMoves(int* mvs, BOOL isKill) const
 				dst += shiDelta[i];
 				int pcDst = squares[dst];
 				if ((pcDst & pcSelfSide) == 0)
-					mvs[nGenMoves++] = getMove(src, dst);
+					mvList.push_back(getMove(src, dst));
 			}
 			break;
 		}
@@ -147,7 +145,7 @@ int Board::GenerateMoves(int* mvs, BOOL isKill) const
 						continue;
 					int pcDst = squares[dst];
 					if ((pcDst & pcSelfSide) == 0)
-						mvs[nGenMoves++] = getMove(src, dst);
+						mvList.push_back(getMove(src, dst));
 				}
 			}
 			break;
@@ -162,11 +160,11 @@ int Board::GenerateMoves(int* mvs, BOOL isKill) const
 				{
 					int pcDst = squares[dst];
 					if (pcDst == 0)
-						mvs[nGenMoves++] = getMove(src, dst);
+						mvList.push_back(getMove(src, dst));
 					else //目的地有子
 					{
 						if (pcDst & pcOppSide)//是面对的子
-							mvs[nGenMoves++] = getMove(src, dst);
+							mvList.push_back(getMove(src, dst));
 						//否则是自己的子
 						break;
 					}
@@ -185,7 +183,7 @@ int Board::GenerateMoves(int* mvs, BOOL isKill) const
 				{
 					int pcDst = squares[dst];
 					if (pcDst == 0)
-						mvs[nGenMoves++] = getMove(src, dst);
+						mvList.push_back(getMove(src, dst));
 					else  //目的地有子
 						break;
 					dst += delta;
@@ -197,7 +195,7 @@ int Board::GenerateMoves(int* mvs, BOOL isKill) const
 					if (pcDst)
 					{
 						if (pcDst & pcOppSide)
-							mvs[nGenMoves++] = getMove(src, dst);
+							mvList.push_back(getMove(src, dst));
 						break;
 					}
 					dst += delta;
@@ -212,7 +210,7 @@ int Board::GenerateMoves(int* mvs, BOOL isKill) const
 			{
 				int pcDst = squares[dst];
 				if ((pcDst & pcSelfSide) == 0)
-					mvs[nGenMoves++] = getMove(src, dst);
+					mvList.push_back(getMove(src, dst));
 			}
 			if (isAwayHomeHalf(src, player))
 			{
@@ -223,7 +221,7 @@ int Board::GenerateMoves(int* mvs, BOOL isKill) const
 					{
 						int pcDst = squares[dst];
 						if ((pcDst & pcSelfSide) == 0)
-							mvs[nGenMoves++] = getMove(src, dst);
+							mvList.push_back(getMove(src, dst));
 					}
 				}
 			}
@@ -231,7 +229,7 @@ int Board::GenerateMoves(int* mvs, BOOL isKill) const
 		}
 		}
 	}
-	return nGenMoves;
+	return static_cast<int>(mvList.size());
 }
 
 BOOL Board::IsLegalMove(int mv) const
@@ -241,13 +239,13 @@ BOOL Board::IsLegalMove(int mv) const
 	int pcSrc = squares[src];
 	int pcSelfSide = sideTag(player);
 	if ((pcSrc & pcSelfSide) == 0)
-		return false;
+		return FALSE;
 
 	// 2. 判断目标格是否有自己的棋子
 	int dst = getDst(mv);
 	int pcDst = squares[dst];
 	if (pcDst & pcSelfSide)
-		return false;
+		return FALSE;
 
 	// 3. 根据棋子的类型检查走法是否合理
 	switch (pcSrc - pcSelfSide)
@@ -273,7 +271,7 @@ BOOL Board::IsLegalMove(int mv) const
 		else if (isSameX(src, dst))
 			delta = dst < src ? -16 : 16;
 		else
-			return false;
+			return FALSE;
 		int pin = src + delta;
 		while (pin != dst && squares[pin] == 0)
 			pin += delta;
@@ -287,17 +285,17 @@ BOOL Board::IsLegalMove(int mv) const
 			return pin == dst;
 		}
 		else
-			return false;
+			return FALSE;
 	}
 	case PIECE_BING:
 	{
 		if (isAwayHomeHalf(dst, player) &&
-			(dst == src - 1 || dst == nStep + 1))
-			return true;
+			(dst == src - 1 || dst == src + 1))
+			return TRUE;
 		return dst == squareForward(src, player);
 	}
 	default:
-		return false;
+		return FALSE;
 	}
 }
 
@@ -313,13 +311,13 @@ BOOL Board::IsChecked() const
 			break;
 
 	if (src == 256)
-		return false;
+		return FALSE;
 	// 1. 判断是否被对方的兵(卒)将军
 	if (squares[squareForward(src, player)] == pcOppSide + PIECE_BING)
-		return true;
+		return TRUE;
 	for (int delta = -1; delta <= 1; delta += 2)
 		if (squares[src + delta] == pcOppSide + PIECE_BING)
-			return true;
+			return TRUE;
 
 	// 2. 判断是否被对方的马将军(以仕(士)的步长当作马腿)
 	for (int i = 0; i < 4; ++i)
@@ -330,7 +328,7 @@ BOOL Board::IsChecked() const
 		{
 			int pcDst = squares[src + maCheckDelta[i][j]];
 			if (pcDst == pcOppSide + PIECE_MA)
-				return true;
+				return TRUE;
 		}
 	}
 
@@ -346,7 +344,7 @@ BOOL Board::IsChecked() const
 			{
 				if (pcDst == pcOppSide + PIECE_JU ||
 					pcDst == pcOppSide + PIECE_JIANG)
-					return true;
+					return TRUE;
 				break;
 			}
 			dst += delta;
@@ -358,31 +356,67 @@ BOOL Board::IsChecked() const
 			if (pcDst)
 			{
 				if (pcDst == pcOppSide + PIECE_PAO)
-					return true;
+					return TRUE;
 				break;
 			}
 			dst += delta;
 		}
 	}
-	return false;
+	return FALSE;
 }
 
 // 判断是否被将死
 BOOL Board::IsMate()
 {
-	int mvs[MAX_GEN_MOVES];
-	int n = GenerateMoves(mvs, TODO);
+	vector<int> mvList;
+	int n = GenerateMoves(mvList);
 	for (int i = 0; i < n; ++i)
 	{
-		int pcKilled = MovePiece(mvs[i]);
+		int pcKilled = MovePiece(mvList[i]);
 		if (!IsChecked()) // 没有被将军，说明还有活路
 		{
-			UndoMovePiece(mvs[i], pcKilled);
-			return false;
+			UndoMovePiece(mvList[i], pcKilled);
+			return FALSE;
 		}
-		else // 被将军了，若是任意走一步都被将军，则已被将死, return true
-			UndoMovePiece(mvs[i], pcKilled);
+		else // 被将军了，若是任意走一步都被将军，则已被将死, return TRUE
+		{
+			UndoMovePiece(mvList[i], pcKilled);
+		}
 	}
-	return true;
+	return TRUE;
+}
+
+// 检测重复局面
+int Board::RepStatus(int nRecur) const
+{
+	BOOL selfSide = FALSE;
+	BOOL selfCheck = TRUE;
+	BOOL oppCheck = TRUE;
+	for (auto i = mvsList.crbegin(); i != mvsList.crend(); ++i)
+	{
+		if (selfSide)
+		{
+			selfCheck = selfCheck && i->checked;
+			if (i->key == zobr.key)
+			{
+				--nRecur;
+				if (nRecur == 0)
+					return 1 + (selfCheck ? 2 : 0) + (oppCheck ? 4 : 0);
+			}
+		}
+		else
+		{
+			oppCheck = oppCheck && i->checked;
+		}
+		selfSide = !selfSide;
+	}
+	return 0;
+}
+
+int Board::GameState()
+{
+	if (IsMate())
+		return 3;
+	return RepStatus(3);
 }
 

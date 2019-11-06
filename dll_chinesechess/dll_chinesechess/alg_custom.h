@@ -1,7 +1,7 @@
 #pragma once
 
 // 常数
-constexpr int MAX_GEN_MOVES = 128;// 最大的生成走法数
+//constexpr int MAX_GEN_MOVES = 128;// 最大的生成走法数
 //constexpr int MAX_DEPTH = 4; // 最大的搜索深度
 constexpr int MATE_VALUE = 10000;// 最高分值，即将死的分值
 constexpr int WIN_VALUE = MATE_VALUE - 100; // 搜索出胜负的分值界限，超出此值就说明已经搜索出杀棋了

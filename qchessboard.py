@@ -30,9 +30,13 @@ class QChessBoard(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.boardJpg = QtGui.QPixmap('images\\IMAGES_X\\WOOD.JPG')
+        self.oosGif = QtGui.QPixmap('images\\IMAGES_X\\COMIC\\OOS.GIF')
         self.painter = QPainter()
-        self.mv1 = None
-        self.mv2 = None
+        self.isFlipped = False
+        self.gameState = 0
+        self.sqSelected = 0
+        self.mv_cur = None
+        self.mv_last = None
 
     def mousePressEvent(self, e: QtGui.QMouseEvent):
         super().mousePressEvent(e)
@@ -43,63 +47,80 @@ class QChessBoard(QWidget):
         player = getPlayer()
         pc = getSquares()[pos]
         if isSelfChess(player, pc):
-            setSqselected(pos)
+            self.sqSelected = pos
             self.repaint()
             return
 
-        sqSelected = getSqSelected()
-        if sqSelected != 0 and not isSelfChess(player, pc):
-            print(sqSelected, pos)
-            ret = playerMove(sqSelected, pos)
+        if self.sqSelected != 0 and not isSelfChess(player, pc):
+            print(self.sqSelected, pos)
+            ret = playerMove(self.sqSelected, pos)
             if ret != 1:
-                setSqselected(0)
+                self.sqSelected = 0
                 return
-            setSqselected(0)
-            self.mv1 = sqSelected
-            self.mv2 = pos
+            self.mv_last = self.mv_cur
+            self.mv_cur = getMove(self.sqSelected, pos)
+            self.sqSelected = 0
             self.repaint()
-            if isMate():
+            self.gameState = getGameState()
+            print(self.gameState)
+            print(self.printBoard())
+            if self.gameState != 0:
                 QMessageBox.information(self, '游戏结束！', '游戏结束！')
                 return
-            aiMove()
-            setSqselected(0)
+            self.mv_last = self.mv_cur
+            self.mv_cur = aiCustomMove()
+            self.sqSelected = 0
             self.repaint()
-            if isMate():
+            self.gameState = getGameState()
+            print(self.gameState)
+            print(self.printBoard())
+            if self.gameState != 0:
                 QMessageBox.information(self, '游戏结束！', '游戏结束！')
                 return
 
 
     def printBoard(self):
+        print('\nBoard:')
         for y in range(16):
             for x in range(16):
                 print(getSquares()[getPos_XY(x, y)], end=',')
             print()
 
+    def drawOOS(self, pos):
+        if pos == 0:
+            return
+        x = pos % 16 -3
+        y = pos // 16 -3
+        x = self.boardEdge + self.squareSize * x
+        y = self.boardEdge + self.squareSize * y
+        self.painter.drawPixmap(x, y, self.oosGif)
+
     def paintEvent(self, e):
         super().paintEvent(e)
         squares = getSquares()
-        sqSelected = getSqSelected()
         self.painter.begin(self)
         self.painter.drawPixmap(0, 0, self.boardJpg)
         for i in self.validSquares:
             pc = squares[i]
             gifPath = None
             if pc != 0:
-                gifPath = self.pcPath + self.pcStr[pc] + self.selectedStr[int(sqSelected == i)]
-            elif sqSelected == i:
-                gifPath = self.pcPath + 'OOS'
+                gifPath = self.pcPath + self.pcStr[pc] + self.selectedStr[int(self.sqSelected == i)]
             else:
                 continue
-            if gifPath:
-                gifPath += '.GIF'
-                gif = QtGui.QPixmap(gifPath)
-                x = i % 16 - 3
-                y = i // 16 - 3
-                px = self.boardEdge + self.squareSize * x
-                py = self.boardEdge + self.squareSize * y
-                self.painter.drawPixmap(px, py, gif)
-        # if mv1 != 0:
-        #     gifPath = self.pcPath + 'OOS.GIF'
-        #     x = mv1 % 16 - 3
-        #     y = mv1 // 16 - 3
+            gifPath += '.GIF'
+            gif = QtGui.QPixmap(gifPath)
+            x = i % 16 - 3
+            y = i // 16 - 3
+            px = self.boardEdge + self.squareSize * x
+            py = self.boardEdge + self.squareSize * y
+            self.painter.drawPixmap(px, py, gif)
+        src1 = getSrc(self.mv_last)
+        src2 = getSrc(self.mv_cur)
+        dst1 = getDst(self.mv_last)
+        dst2 = getDst(self.mv_cur)
+        self.drawOOS(src1)
+        self.drawOOS(src2)
+        self.drawOOS(dst1)
+        self.drawOOS(dst2)
+        self.drawOOS(self.sqSelected)
         self.painter.end()

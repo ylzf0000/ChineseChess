@@ -17,16 +17,12 @@ struct Board
 
 	int nStep;					// 距离根节点的步数
 	std::vector<MoveStruct> mvsList; // 历史走法信息列表
-	ZobristStruct zobr;			// Zobrist
+	ZobristStruct zobr;			// 当前局面的Zobrist键值
 	void SetIrrev()			// 清空(初始化)历史走法信息
 	{
 		mvsList.clear();
 		mvsList.push_back({ 0,0,(BYTE)IsChecked(),zobr.key });
 	}
-
-	int sqSelected;// 选中的格子，上一步棋
-	int mvLast;
-	BOOL isFlipped;// 是否翻转棋盘
 
 	void Startup();// 初始化棋盘
 	int MovePiece(int mv);
@@ -35,16 +31,23 @@ struct Board
 	int PlayerMove_Unchecked(int mv);//0走法被将军 1可以走且已经走
 	int PlayerMove_Checked(int mv); //-1不合法 0走法被将军 1可以走且已经走
 	// 生成所有走法，如果"isKill"为"TRUE"则只生成吃子走法
-	int GenerateMoves(int* mvs, BOOL isKill)const;
+	int GenerateMoves(std::vector<int>& mvList, BOOL isKill = FALSE)const;
 	BOOL IsLegalMove(int mv)const;
 	BOOL IsChecked()const;// 判断是否被将军
 	BOOL IsMate(); //判断是否被将死
+	/*A.返回0，表示没有重复局面；
+	**B.返回1，表示存在重复局面，但双方都无长将(判和)；
+	**C.返回3(= 1 + 2)，表示存在重复局面，本方单方面长将(判本方负)；
+	**D.返回5(= 1 + 4)，表示存在重复局面，对方单方面长将(判对方负)；
+	**E.返回7(= 1 + 2 + 4)，表示存在重复局面，双方长将(判和)。*/
 	int RepStatus(int nRecur = 1)const;// 检测重复局面
-	void UndoMakeMove(int mv, int pcKilled)
+	int GameState(); //对方落子之后，轮到我方的判断
+	void UndoMakeMove()
 	{
 		--nStep;
 		ChangeSide();
-		UndoMovePiece(mv, pcKilled);
+		UndoMovePiece(mvsList.back().mv, mvsList.back().pcKilled);
+		mvsList.pop_back();
 	}
 	void ChangeSide() {
 		player = 1 - player;
