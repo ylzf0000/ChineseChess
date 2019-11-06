@@ -63,7 +63,6 @@ class QChessBoard(QWidget):
             self.repaint()
             self.gameState = getGameState()
             print(self.gameState)
-            print(self.printBoard())
             if self.gameState != 0:
                 QMessageBox.information(self, '游戏结束！', '游戏结束！')
                 return
@@ -73,7 +72,6 @@ class QChessBoard(QWidget):
             self.repaint()
             self.gameState = getGameState()
             print(self.gameState)
-            print(self.printBoard())
             if self.gameState != 0:
                 QMessageBox.information(self, '游戏结束！', '游戏结束！')
                 return

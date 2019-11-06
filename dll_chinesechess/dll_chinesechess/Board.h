@@ -40,8 +40,8 @@ struct Board
 	**C.返回3(= 1 + 2)，表示存在重复局面，本方单方面长将(判本方负)；
 	**D.返回5(= 1 + 4)，表示存在重复局面，对方单方面长将(判对方负)；
 	**E.返回7(= 1 + 2 + 4)，表示存在重复局面，双方长将(判和)。*/
-	int RepStatus(int nRecur = 1)const;// 检测重复局面
-	int GameState(); //对方落子之后，轮到我方的判断
+	int RepStatus(int nRecur = 1)const;	// 检测重复局面
+	int GameState();					// 我方落子之后的判断
 	void UndoMakeMove()
 	{
 		--nStep;

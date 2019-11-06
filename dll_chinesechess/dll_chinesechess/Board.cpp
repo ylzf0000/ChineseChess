@@ -389,7 +389,7 @@ BOOL Board::IsMate()
 // ºÏ≤‚÷ÿ∏¥æ÷√Ê
 int Board::RepStatus(int nRecur) const
 {
-	BOOL selfSide = FALSE;
+	BOOL selfSide = TRUE;
 	BOOL selfCheck = TRUE;
 	BOOL oppCheck = TRUE;
 	for (auto i = mvsList.crbegin(); i != mvsList.crend(); ++i)
