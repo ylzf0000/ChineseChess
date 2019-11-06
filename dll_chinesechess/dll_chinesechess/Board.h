@@ -21,7 +21,7 @@ struct Board
 	void SetIrrev()			// 清空(初始化)历史走法信息
 	{
 		mvsList.clear();
-		mvsList.push_back({ 0,0,IsChecked(),zobr.dwKey });
+		mvsList.push_back({ 0,0,(BYTE)IsChecked(),zobr.key });
 	}
 
 	int sqSelected;// 选中的格子，上一步棋
@@ -31,13 +31,15 @@ struct Board
 	void Startup();// 初始化棋盘
 	int MovePiece(int mv);
 	void UndoMovePiece(int mv, int pcKilled);
-	bool MakeMove(int mv, int& pcKilled);
+	BOOL MakeMove(int mv, int& pcKilled);
 	int PlayerMove_Unchecked(int mv);//0走法被将军 1可以走且已经走
 	int PlayerMove_Checked(int mv); //-1不合法 0走法被将军 1可以走且已经走
-	int GenerateMoves(int* mvs)const;
-	bool IsLegalMove(int mv)const;
-	bool IsChecked()const;// 判断是否被将军
-	bool IsMate(); //判断是否被将死
+	// 生成所有走法，如果"isKill"为"TRUE"则只生成吃子走法
+	int GenerateMoves(int* mvs, BOOL isKill)const;
+	BOOL IsLegalMove(int mv)const;
+	BOOL IsChecked()const;// 判断是否被将军
+	BOOL IsMate(); //判断是否被将死
+	int RepStatus(int nRecur = 1)const;// 检测重复局面
 	void UndoMakeMove(int mv, int pcKilled)
 	{
 		--nStep;
@@ -74,17 +76,33 @@ struct Board
 	void DelPiece(int pos, int pc)
 	{
 		squares[pos] = 0;
-#ifdef ALG_CUSTOM
 		// 红方减分，黑方(注意"cucvlPiecePos"取值要颠倒)加分
 		if (pc < 16)
+		{
+			zobr.Xor(Zobrist::Instance().Table[pc - 8][pos]);
+#ifdef ALG_CUSTOM
 			valRed -= piecePosValue[pc - 8][pos];
+#endif // ALG_CUSTOM
+		}
 		else
+		{
+			zobr.Xor(Zobrist::Instance().Table[pc - 9][pos]);
+#ifdef ALG_CUSTOM
 			valBlack -= piecePosValue[pc - 16][flipSquare(pos)];
 #endif // ALG_CUSTOM
+		}
 	}
 	int Evaluate() const
 	{
 		return ((player == 0) ? valRed - valBlack : valBlack - valRed)
 			+ ADVANCED_VALUE;
+	}
+	BOOL InCheck()const// 判断是否被将军
+	{
+		return mvsList.back().checked;
+	}
+	BOOL IsKill()const// 上一步是否吃子
+	{
+		return mvsList.back().pcKilled != 0;
 	}
 };

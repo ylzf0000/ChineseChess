@@ -11,6 +11,7 @@ void Board::Startup()
 	sqSelected = 0;
 	mvLast = 0;
 	mvsList.reserve(256);
+	zobr.InitZero();
 	memset(squares, 0, sizeof(squares));
 	for (int pos = 0; pos < 256; ++pos)
 	{
@@ -46,17 +47,18 @@ void Board::UndoMovePiece(int mv, int pcKilled)
 		AddPiece(dst, pcKilled);
 }
 
-bool Board::MakeMove(int mv, int& pcKilled)
+BOOL Board::MakeMove(int mv, int& pcKilled)
 {
 	pcKilled = MovePiece(mv);
 	if (IsChecked())
 	{
 		UndoMovePiece(mv, pcKilled);
-		return false;
+		return FALSE;
 	}
 	ChangeSide();
+	mvsList.push_back({ (WORD)mv,(BYTE)pcKilled,(BYTE)IsChecked(),zobr.key });
 	++nStep;
-	return true;
+	return TRUE;
 }
 
 int Board::PlayerMove_Unchecked(int mv)
@@ -79,7 +81,7 @@ int Board::PlayerMove_Checked(int mv)
 		return -1;
 }
 
-int Board::GenerateMoves(int* mvs) const
+int Board::GenerateMoves(int* mvs, BOOL isKill) const
 {
 	int nGenMoves = 0;
 	int pcSelfSide = sideTag(player);
@@ -232,7 +234,7 @@ int Board::GenerateMoves(int* mvs) const
 	return nGenMoves;
 }
 
-bool Board::IsLegalMove(int mv) const
+BOOL Board::IsLegalMove(int mv) const
 {
 	// 1. 判断起始格是否有自己的棋子
 	int src = getSrc(mv);
@@ -300,7 +302,7 @@ bool Board::IsLegalMove(int mv) const
 }
 
 // 判断是否被将军
-bool Board::IsChecked() const
+BOOL Board::IsChecked() const
 {
 	int pcSelfSide = sideTag(player);
 	int pcOppSide = oppSideTag(player);
@@ -366,10 +368,10 @@ bool Board::IsChecked() const
 }
 
 // 判断是否被将死
-bool Board::IsMate()
+BOOL Board::IsMate()
 {
 	int mvs[MAX_GEN_MOVES];
-	int n = GenerateMoves(mvs);
+	int n = GenerateMoves(mvs, TODO);
 	for (int i = 0; i < n; ++i)
 	{
 		int pcKilled = MovePiece(mvs[i]);

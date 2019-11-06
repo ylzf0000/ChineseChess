@@ -20,7 +20,7 @@ int searchFull(int alpha, int beta, int depth)
 	int mvBest = 0; // 这样可以知道，是否搜索到了Beta走法或PV走法，以便保存到历史表
 
 	// 3. 生成全部走法，并根据历史表排序
-	int n = board.GenerateMoves(mvs);
+	int n = board.GenerateMoves(mvs, TODO);
 	sort(mvs, mvs + n, [&](int a, int b) {
 		return sc.historyTable[a] > sc.historyTable[b]; });
 

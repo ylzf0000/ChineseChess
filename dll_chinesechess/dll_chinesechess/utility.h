@@ -216,25 +216,25 @@ struct RC4Struct
 // Zobrist结构
 struct ZobristStruct
 {
-	DWORD dwKey, dwLock0, dwLock1;
+	DWORD key, lock0, lock1;
 
 	void InitZero(void) {                 // 用零填充Zobrist
-		dwKey = dwLock0 = dwLock1 = 0;
+		key = lock0 = lock1 = 0;
 	}
 	void InitRC4(RC4Struct& rc4) {        // 用密码流填充Zobrist
-		dwKey = rc4.NextLong();
-		dwLock0 = rc4.NextLong();
-		dwLock1 = rc4.NextLong();
+		key = rc4.NextLong();
+		lock0 = rc4.NextLong();
+		lock1 = rc4.NextLong();
 	}
 	void Xor(const ZobristStruct& zobr) { // 执行XOR操作
-		dwKey ^= zobr.dwKey;
-		dwLock0 ^= zobr.dwLock0;
-		dwLock1 ^= zobr.dwLock1;
+		key ^= zobr.key;
+		lock0 ^= zobr.lock0;
+		lock1 ^= zobr.lock1;
 	}
 	void Xor(const ZobristStruct& zobr1, const ZobristStruct& zobr2) {
-		dwKey ^= zobr1.dwKey ^ zobr2.dwKey;
-		dwLock0 ^= zobr1.dwLock0 ^ zobr2.dwLock0;
-		dwLock1 ^= zobr1.dwLock1 ^ zobr2.dwLock1;
+		key ^= zobr1.key ^ zobr2.key;
+		lock0 ^= zobr1.lock0 ^ zobr2.lock0;
+		lock1 ^= zobr1.lock1 ^ zobr2.lock1;
 	}
 };
 
@@ -278,9 +278,9 @@ private:
 // 历史走法信息(占4字节)
 struct MoveStruct
 {
-	WORD wmv;
-	BYTE ucpcCaptured, ucbCheck;
-	DWORD dwKey;
+	WORD mv;
+	BYTE pcKilled, checked;
+	DWORD key;
 	//void Set(int mv, int pcCaptured, BOOL bCheck, DWORD dwKey_)
 	//{
 	//	wmv = mv;
