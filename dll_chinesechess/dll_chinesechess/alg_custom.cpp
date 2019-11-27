@@ -7,7 +7,6 @@ Search sc;
 // 超出边界(Fail-Soft)的Alpha-Beta搜索过程
 int searchFull(int alpha, int beta, int depth)
 {
-	vector<int> mvList;
 	Board& board = Board::Instance();
 	// 一个Alpha-Beta完全搜索分为以下几个阶段
 
@@ -20,7 +19,8 @@ int searchFull(int alpha, int beta, int depth)
 	int mvBest = 0; // 这样可以知道，是否搜索到了Beta走法或PV走法，以便保存到历史表
 
 	// 3. 生成全部走法，并根据历史表排序
-	int n = board.GenerateMoves(mvList);
+	int n = board.GenerateMoves();
+	auto mvList = board.genMvList;
 	sort(begin(mvList), end(mvList), [&](int a, int b) {
 		return sc.historyTable[a] > sc.historyTable[b]; });
 

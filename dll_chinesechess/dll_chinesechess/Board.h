@@ -15,6 +15,7 @@ struct Board
 	int valRed, valBlack;		// 红、黑双方的子力价值
 #endif // ALG_CUSTOM
 
+	std::vector<int> genMvList; // 生成的所有走法存放处
 	int nStep;					// 距离根节点的步数
 	std::vector<MoveStruct> mvsList; // 历史走法信息列表
 	ZobristStruct zobr;			// 当前局面的Zobrist键值
@@ -31,7 +32,8 @@ struct Board
 	int PlayerMove_Unchecked(int mv);//0走法被将军 1可以走且已经走
 	int PlayerMove_Checked(int mv); //-1不合法 0走法被将军 1可以走且已经走
 	// 生成所有走法，如果"isKill"为"TRUE"则只生成吃子走法
-	int GenerateMoves(std::vector<int>& mvList, BOOL isKill = FALSE)const;
+	//int GenerateMoves(std::vector<int>& mvList, BOOL isKill = FALSE)const;
+	int GenerateMoves(BOOL isKill = FALSE);
 	BOOL IsLegalMove(int mv)const;
 	BOOL IsChecked()const;// 判断是否被将军
 	BOOL IsMate(); //判断是否被将死

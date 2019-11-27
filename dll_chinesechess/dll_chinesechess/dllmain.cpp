@@ -39,10 +39,10 @@ DLL_EXPORT int getNStep()
 {
 	return board.nStep;
 }
-DLL_EXPORT BOOL isMate()
-{
-	return board.IsMate();
-}
+//DLL_EXPORT BOOL isMate()
+//{
+//	return board.IsMate();
+//}
 DLL_EXPORT int getRepStatus()
 {
 	return board.RepStatus();
@@ -51,6 +51,16 @@ DLL_EXPORT int getGameState()
 {
 	return board.GameState();
 }
+//DLL_EXPORT BOOL isLegalMove(int mv)
+//{
+//	return board.IsLegalMove(mv);
+//}
+//DLL_EXPORT int generateMoves(int** mvs)
+//{
+//	int ret = board.GenerateMoves();
+//	*mvs = &(board.genMvList[0]);
+//	return ret;
+//}
 END_EXTERNC
 
 

@@ -27,6 +27,17 @@ def init_DLL(platform, cfg):
     dll_cc.isSelfChess.argtypes = (c_int, c_int)
     dll_cc.isOppChess.restype = c_int
     dll_cc.isOppChess.argtypes = (c_int, c_int)
+    dll_cc.isLegalMove.argtypes = (POINTER(c_ubyte), c_int, c_int)
+    dll_cc.isLegalMove.restype = c_int
+    # int generateMoves(BYTE* squares, int** mvs, int player);
+    dll_cc.generateMoves.argtypes = (POINTER(c_ubyte), POINTER(POINTER(c_int)), c_int)
+    dll_cc.generateMoves.restype = c_int
+    # DLL_EXPORT BOOL hasLegalMove(BYTE* squares, int player);
+    dll_cc.hasLegalMove.argtypes = (POINTER(c_ubyte), c_int)
+    dll_cc.generateMoves.restype = c_int
+    # DLL_EXPORT BOOL makeMove(BYTE* squares, int mv, int player);
+    dll_cc.makeMove.argtypes = (POINTER(c_ubyte), c_int, c_int)
+    dll_cc.makeMove.restype = c_int
 
 
 def aiCustomMove():
@@ -97,8 +108,29 @@ def getDst(mv):
 def getMove(src, dst):
     return dll_cc.getMove(src, dst)
 
+
 def getRepStatus():
     return dll_cc.getRepStatus()
 
+
 def getGameState():
     return dll_cc.getGameState()
+
+
+def isLegalMove(squares, mv, player):
+    return dll_cc.isLegalMove(squares, mv, player)
+
+
+# int generateMoves(BYTE* squares, int** mvs, int player);
+def generateMoves(squares, mvs, player):
+    return dll_cc.generateMoves(squares, mvs, player)
+
+
+# DLL_EXPORT BOOL hasLegalMove(BYTE* squares, int player);
+def hasLegalMove(squares, player):
+    return dll_cc.hasLegalMove(squares, player)
+
+
+# DLL_EXPORT BOOL makeMove(BYTE* squares, int mv, int player);
+def makeMove(squares, mv, player):
+    return dll_cc.makeMove(squares, mv, player)

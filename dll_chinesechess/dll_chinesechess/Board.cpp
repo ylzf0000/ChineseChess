@@ -79,9 +79,9 @@ int Board::PlayerMove_Checked(int mv)
 		return -1;
 }
 
-int Board::GenerateMoves(std::vector<int>& mvList, BOOL isKill) const
+int Board::GenerateMoves(BOOL isKill)
 {
-	mvList.clear();
+	genMvList.clear();
 	int pcSelfSide = sideTag(player);
 	int pcOppSide = oppSideTag(player);
 	for (int src = 0; src < 256; ++src)
@@ -100,7 +100,7 @@ int Board::GenerateMoves(std::vector<int>& mvList, BOOL isKill) const
 					continue;
 				int pcDst = squares[dst];
 				if ((pcDst & pcSelfSide) == 0)
-					mvList.push_back(getMove(src, dst));
+					genMvList.push_back(getMove(src, dst));
 			}
 			break;
 		}
@@ -113,7 +113,7 @@ int Board::GenerateMoves(std::vector<int>& mvList, BOOL isKill) const
 					continue;
 				int pcDst = squares[dst];
 				if ((pcDst & pcSelfSide) == 0)
-					mvList.push_back(getMove(src, dst));
+					genMvList.push_back(getMove(src, dst));
 			}
 			break;
 		}
@@ -127,7 +127,7 @@ int Board::GenerateMoves(std::vector<int>& mvList, BOOL isKill) const
 				dst += shiDelta[i];
 				int pcDst = squares[dst];
 				if ((pcDst & pcSelfSide) == 0)
-					mvList.push_back(getMove(src, dst));
+					genMvList.push_back(getMove(src, dst));
 			}
 			break;
 		}
@@ -145,7 +145,7 @@ int Board::GenerateMoves(std::vector<int>& mvList, BOOL isKill) const
 						continue;
 					int pcDst = squares[dst];
 					if ((pcDst & pcSelfSide) == 0)
-						mvList.push_back(getMove(src, dst));
+						genMvList.push_back(getMove(src, dst));
 				}
 			}
 			break;
@@ -160,11 +160,11 @@ int Board::GenerateMoves(std::vector<int>& mvList, BOOL isKill) const
 				{
 					int pcDst = squares[dst];
 					if (pcDst == 0)
-						mvList.push_back(getMove(src, dst));
+						genMvList.push_back(getMove(src, dst));
 					else //目的地有子
 					{
 						if (pcDst & pcOppSide)//是面对的子
-							mvList.push_back(getMove(src, dst));
+							genMvList.push_back(getMove(src, dst));
 						//否则是自己的子
 						break;
 					}
@@ -183,7 +183,7 @@ int Board::GenerateMoves(std::vector<int>& mvList, BOOL isKill) const
 				{
 					int pcDst = squares[dst];
 					if (pcDst == 0)
-						mvList.push_back(getMove(src, dst));
+						genMvList.push_back(getMove(src, dst));
 					else  //目的地有子
 						break;
 					dst += delta;
@@ -195,7 +195,7 @@ int Board::GenerateMoves(std::vector<int>& mvList, BOOL isKill) const
 					if (pcDst)
 					{
 						if (pcDst & pcOppSide)
-							mvList.push_back(getMove(src, dst));
+							genMvList.push_back(getMove(src, dst));
 						break;
 					}
 					dst += delta;
@@ -210,7 +210,7 @@ int Board::GenerateMoves(std::vector<int>& mvList, BOOL isKill) const
 			{
 				int pcDst = squares[dst];
 				if ((pcDst & pcSelfSide) == 0)
-					mvList.push_back(getMove(src, dst));
+					genMvList.push_back(getMove(src, dst));
 			}
 			if (isAwayHomeHalf(src, player))
 			{
@@ -221,7 +221,7 @@ int Board::GenerateMoves(std::vector<int>& mvList, BOOL isKill) const
 					{
 						int pcDst = squares[dst];
 						if ((pcDst & pcSelfSide) == 0)
-							mvList.push_back(getMove(src, dst));
+							genMvList.push_back(getMove(src, dst));
 					}
 				}
 			}
@@ -229,7 +229,7 @@ int Board::GenerateMoves(std::vector<int>& mvList, BOOL isKill) const
 		}
 		}
 	}
-	return static_cast<int>(mvList.size());
+	return static_cast<int>(genMvList.size());
 }
 
 BOOL Board::IsLegalMove(int mv) const
@@ -368,8 +368,8 @@ BOOL Board::IsChecked() const
 // 判断是否被将死
 BOOL Board::IsMate()
 {
-	vector<int> mvList;
-	int n = GenerateMoves(mvList);
+	int n = GenerateMoves();
+	auto mvList = genMvList;
 	for (int i = 0; i < n; ++i)
 	{
 		int pcKilled = MovePiece(mvList[i]);

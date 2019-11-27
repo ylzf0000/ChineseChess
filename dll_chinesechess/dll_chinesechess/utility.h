@@ -476,4 +476,17 @@ DLL_EXPORT inline BOOL isOppChess(int player, int pc)
 {
 	return (oppSideTag(player) & pc) != 0;
 }
+
+DLL_EXPORT BOOL isLegalMove(BYTE* squares, int mv, int player);
+DLL_EXPORT BOOL hasLegalMove(BYTE* squares, int player);
+DLL_EXPORT int generateMoves(BYTE* squares, int** mvs, int player);
+DLL_EXPORT void initSquares(BYTE* squares);
+DLL_EXPORT int movePiece(BYTE* squares, int mv);
+DLL_EXPORT void undoMovePiece(BYTE* squares, int mv, int pcKilled);
+DLL_EXPORT BOOL makeMove(BYTE* squares, int mv, int player);
+DLL_EXPORT void addPiece(BYTE* squares, int pos, int pc);
+DLL_EXPORT void delPiece(BYTE* squares, int pos, int pc);
+DLL_EXPORT BOOL isChecked(BYTE* squares, int player);
+DLL_EXPORT BOOL isMate(BYTE* squares, int player);
+//int repStatus()
 END_EXTERNC

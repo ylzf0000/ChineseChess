@@ -14,7 +14,6 @@ class QChessBoard(QWidget):
              'BK', 'BA', 'BB', 'BN', 'BR', 'BC', 'BP', '')
     selectedStr = ('', 'S')
     pcPath = 'images\\IMAGES_X\\COMIC\\'
-    boardJpg = None
     validSquares = (
         51, 52, 53, 54, 55, 56, 57, 58, 59,
         67, 68, 69, 70, 71, 72, 73, 74, 75,
