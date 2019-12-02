@@ -121,7 +121,7 @@ class AlphaZeroAgent:
     def decide(self, observation, greedy=False, return_prob=False):
         # 计算策略
         board, player = observation
-        board = np.array([board[i] for i in range(256)]).reshape(16, 16)
+        board = np.array([float(board[i]) for i in range(256)]).reshape(16, 16)
         canonical_board = player * board
         s = boardgame2.strfboard(canonical_board)
         while self.count[s].sum() < self.sim_count:  # 多次 MCTS 搜索
