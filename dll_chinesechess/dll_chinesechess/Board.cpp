@@ -4,22 +4,14 @@
 using namespace std;
 void Board::Startup()
 {
-	player = 0;
-	valRed = 0;
-	valBlack = 0;
-	nStep = 0;
-	mvsList.reserve(256);
-	SetIrrev();
-	zobr.InitZero();
-	memset(squares, 0, sizeof(squares));
+	ClearBoard();
 	for (int pos = 0; pos < 256; ++pos)
 	{
 		int pc = initBoard[pos];
 		if (pc)
-		{
 			AddPiece(pos, pc);
-		}
 	}
+	SetIrrev();
 }
 
 int Board::MovePiece(int mv)
@@ -46,9 +38,9 @@ void Board::UndoMovePiece(int mv, int pcKilled)
 		AddPiece(dst, pcKilled);
 }
 
-BOOL Board::MakeMove(int mv, int& pcKilled)
+BOOL Board::MakeMove(int mv)
 {
-	pcKilled = MovePiece(mv);
+	int pcKilled = MovePiece(mv);
 	if (IsChecked())
 	{
 		UndoMovePiece(mv, pcKilled);
@@ -63,7 +55,7 @@ BOOL Board::MakeMove(int mv, int& pcKilled)
 int Board::PlayerMove_Unchecked(int mv)
 {
 	int pcKilled;
-	if (MakeMove(mv, pcKilled))
+	if (MakeMove(mv))
 	{
 		return 1;
 	}
@@ -79,7 +71,8 @@ int Board::PlayerMove_Checked(int mv)
 		return -1;
 }
 
-int Board::GenerateMoves(std::vector<int>& mvList, BOOL isKill) const
+// 生成所有走法，如果isKill为TRUE则只生成吃子走法
+int Board::GenerateMoves(vector<int>& mvList, BOOL isKill) const
 {
 	mvList.clear();
 	int pcSelfSide = sideTag(player);
@@ -99,7 +92,8 @@ int Board::GenerateMoves(std::vector<int>& mvList, BOOL isKill) const
 				if (!isInJiuGong(dst))
 					continue;
 				int pcDst = squares[dst];
-				if ((pcDst & pcSelfSide) == 0)
+				//if ((pcDst & pcSelfSide) == 0)
+				if (isKill ? (pcDst & pcOppSide) != 0 : (pcDst & pcSelfSide) == 0)
 					mvList.push_back(getMove(src, dst));
 			}
 			break;
@@ -112,7 +106,7 @@ int Board::GenerateMoves(std::vector<int>& mvList, BOOL isKill) const
 				if (!isInJiuGong(dst))
 					continue;
 				int pcDst = squares[dst];
-				if ((pcDst & pcSelfSide) == 0)
+				if (isKill ? (pcDst & pcOppSide) != 0 : (pcDst & pcSelfSide) == 0)
 					mvList.push_back(getMove(src, dst));
 			}
 			break;
@@ -126,7 +120,7 @@ int Board::GenerateMoves(std::vector<int>& mvList, BOOL isKill) const
 					continue;
 				dst += shiDelta[i];
 				int pcDst = squares[dst];
-				if ((pcDst & pcSelfSide) == 0)
+				if (isKill ? (pcDst & pcOppSide) != 0 : (pcDst & pcSelfSide) == 0)
 					mvList.push_back(getMove(src, dst));
 			}
 			break;
@@ -144,7 +138,7 @@ int Board::GenerateMoves(std::vector<int>& mvList, BOOL isKill) const
 					if (!isInBoard(dst))
 						continue;
 					int pcDst = squares[dst];
-					if ((pcDst & pcSelfSide) == 0)
+					if (isKill ? (pcDst & pcOppSide) != 0 : (pcDst & pcSelfSide) == 0)
 						mvList.push_back(getMove(src, dst));
 				}
 			}
@@ -160,7 +154,10 @@ int Board::GenerateMoves(std::vector<int>& mvList, BOOL isKill) const
 				{
 					int pcDst = squares[dst];
 					if (pcDst == 0)
-						mvList.push_back(getMove(src, dst));
+					{
+						if (!isKill)
+							mvList.push_back(getMove(src, dst));
+					}
 					else //目的地有子
 					{
 						if (pcDst & pcOppSide)//是面对的子
@@ -183,7 +180,10 @@ int Board::GenerateMoves(std::vector<int>& mvList, BOOL isKill) const
 				{
 					int pcDst = squares[dst];
 					if (pcDst == 0)
-						mvList.push_back(getMove(src, dst));
+					{
+						if (!isKill)
+							mvList.push_back(getMove(src, dst));
+					}
 					else  //目的地有子
 						break;
 					dst += delta;
@@ -209,7 +209,7 @@ int Board::GenerateMoves(std::vector<int>& mvList, BOOL isKill) const
 			if (isInBoard(dst))
 			{
 				int pcDst = squares[dst];
-				if ((pcDst & pcSelfSide) == 0)
+				if (isKill ? (pcDst & pcOppSide) != 0 : (pcDst & pcSelfSide) == 0)
 					mvList.push_back(getMove(src, dst));
 			}
 			if (isAwayHomeHalf(src, player))
@@ -220,7 +220,7 @@ int Board::GenerateMoves(std::vector<int>& mvList, BOOL isKill) const
 					if (isInBoard(dst))
 					{
 						int pcDst = squares[dst];
-						if ((pcDst & pcSelfSide) == 0)
+						if (isKill ? (pcDst & pcOppSide) != 0 : (pcDst & pcSelfSide) == 0)
 							mvList.push_back(getMove(src, dst));
 					}
 				}
@@ -392,7 +392,8 @@ int Board::RepStatus(int nRecur) const
 	BOOL selfSide = TRUE;
 	BOOL selfCheck = TRUE;
 	BOOL oppCheck = TRUE;
-	for (auto i = mvsList.crbegin(); i != mvsList.crend(); ++i)
+	for (auto i = mvsList.crbegin();
+		i != mvsList.crend() && i->mv != 0 && i->pcKilled == 0; ++i)
 	{
 		if (selfSide)
 		{
@@ -411,6 +412,20 @@ int Board::RepStatus(int nRecur) const
 		selfSide = !selfSide;
 	}
 	return 0;
+}
+
+void Board::Mirror(Board& mirror) const
+{
+	mirror.ClearBoard();
+	for (int sq = 0; sq < 256; ++sq)
+	{
+		int pc = squares[sq];
+		if (pc != 0)
+			mirror.AddPiece(mirrorXSquare(sq), pc);
+	}
+	if (player == 1)
+		mirror.ChangeSide();
+	mirror.SetIrrev();
 }
 
 int Board::GameState()

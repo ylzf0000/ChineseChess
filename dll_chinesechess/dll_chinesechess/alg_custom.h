@@ -1,11 +1,22 @@
 #pragma once
-
-// 常数
-//constexpr int MAX_GEN_MOVES = 128;// 最大的生成走法数
-//constexpr int MAX_DEPTH = 4; // 最大的搜索深度
-constexpr int MATE_VALUE = 10000;// 最高分值，即将死的分值
-constexpr int WIN_VALUE = MATE_VALUE - 100; // 搜索出胜负的分值界限，超出此值就说明已经搜索出杀棋了
-constexpr int ADVANCED_VALUE = 3;// 先行权分值
+#include <vector>
+// 其他常数
+constexpr int MAX_GEN_MOVES = 128; // 最大的生成走法数
+constexpr int MAX_MOVES = 256;     // 最大的历史走法数
+constexpr int LIMIT_DEPTH = 64;    // 最大的搜索深度
+constexpr int MATE_VALUE = 10000;  // 最高分值，即将死的分值
+constexpr int BAN_VALUE = MATE_VALUE - 100; // 长将判负的分值，低于该值将不写入置换表
+constexpr int WIN_VALUE = MATE_VALUE - 200; // 搜索出胜负的分值界限，超出此值就说明已经搜索出杀棋了
+constexpr int DRAW_VALUE = 20;     // 和棋时返回的分数(取负值)
+constexpr int ADVANCED_VALUE = 3;  // 先行权分值
+constexpr int RANDOM_MASK = 7;     // 随机性分值
+constexpr int NULL_MARGIN = 400;   // 空步裁剪的子力边界
+constexpr int NULL_DEPTH = 2;      // 空步裁剪的裁剪深度
+constexpr int HASH_SIZE = 1 << 20; // 置换表大小
+constexpr int HASH_ALPHA = 1;      // ALPHA节点的置换表项
+constexpr int HASH_BETA = 2;       // BETA节点的置换表项
+constexpr int HASH_PV = 3;         // PV节点的置换表项
+constexpr int BOOK_SIZE = 16384;   // 开局库大小
 
 // 子力位置价值表
 constexpr BYTE piecePosValue[7][256] = {
@@ -131,19 +142,86 @@ constexpr BYTE piecePosValue[7][256] = {
   }
 };
 
+// 置换表项结构
+struct HashItem {
+	BYTE ucDepth, ucFlag;
+	short svl;
+	WORD wmv, wReserved;
+	DWORD dwLock0, dwLock1;
+};
+
+// 开局库项结构
+struct BookItem {
+	DWORD dwLock;
+	WORD wmv, wvl;
+};
+
 struct Search
 {
-	int mvResult;
-	int historyTable[65536];
-	int MAX_DEPTH = 4;
+	//int MAX_DEPTH = 64;
+	int mvResult;                  // 电脑走的棋
+	int historyTable[65536];      // 历史表
+	int mvKillers[LIMIT_DEPTH][2]; // 杀手走法表
+	HashItem HashTable[HASH_SIZE]; // 置换表
+	int nBookSize;                 // 开局库大小
+	BookItem BookTable[BOOK_SIZE]; // 开局库
 };
+
+void LoadBook();
+
+// 提取置换表项
+int ProbeHash(int vlAlpha, int vlBeta, int nDepth, int& mv);
+// 保存置换表项
+void RecordHash(int nFlag, int vl, int nDepth, int mv);
+
+// MVV/LVA每种子力的价值
+static BYTE cucMvvLva[24] = {
+  0, 0, 0, 0, 0, 0, 0, 0,
+  5, 1, 1, 3, 4, 3, 2, 0,
+  5, 1, 1, 3, 4, 3, 2, 0
+};
+
+// 求MVV/LVA值
+int MvvLva(int mv);
+
+
+
+// 走法排序阶段
+const int PHASE_HASH = 0;
+const int PHASE_KILLER_1 = 1;
+const int PHASE_KILLER_2 = 2;
+const int PHASE_GEN_MOVES = 3;
+const int PHASE_REST = 4;
+
+// "GenerateMoves"参数
+const BOOL GEN_CAPTURE = TRUE;
+
+// 走法排序结构
+struct SortStruct {
+	int mvHash, mvKiller1, mvKiller2; // 置换表走法和两个杀手走法
+	int nPhase, nIndex, nGenMoves;    // 当前阶段，当前采用第几个走法，总共有几个走法
+	//int mvs[MAX_GEN_MOVES];           // 所有的走法
+	std::vector<int> mvs;
+	void Init(int mvHash_);
+	int Next(); // 得到下一个走法
+};
+
+// 对最佳走法的处理
+void SetBestMove(int mv, int nDepth);
+
+// 静态(Quiescence)搜索过程
+int SearchQuiesc(int vlAlpha, int vlBeta);
+
 // 超出边界(Fail-Soft)的Alpha-Beta搜索过程
-int searchFull(int alpha, int beta, int depth);
+int SearchFull(int vlAlpha, int vlBeta, int nDepth, BOOL bNoNull = FALSE);
 
 // 迭代加深搜索过程
-void searchMain();
+void SearchMain();
 
 // 电脑回应一步棋,返回-1代表游戏结束
 int responseMove();
+
+
+
 
 
