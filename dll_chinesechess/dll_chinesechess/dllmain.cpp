@@ -28,19 +28,19 @@ BOOL APIENTRY DllMain(HMODULE hModule,
 }
 
 // 棋盘范围
-const int RANK_TOP = 3;
-const int RANK_BOTTOM = 12;
-const int FILE_LEFT = 3;
-const int FILE_RIGHT = 11;
+const int BOUNDARY_TOP = 3;
+const int BOUNDARY_BOTTOM = 12;
+const int BOUNDARY_LEFT = 3;
+const int BOUNDARY_RIGHT = 11;
 
 // 棋子编号
-const int PIECE_KING = 0;
-const int PIECE_ADVISOR = 1;
-const int PIECE_BISHOP = 2;
-const int PIECE_KNIGHT = 3;
-const int PIECE_ROOK = 4;
-const int PIECE_CANNON = 5;
-const int PIECE_PAWN = 6;
+const int PIECE_JIANG = 0;
+const int PIECE_SHI = 1;
+const int PIECE_XIANG = 2;
+const int PIECE_MA = 3;
+const int PIECE_JU = 4;
+const int PIECE_PAO = 5;
+const int PIECE_BING = 6;
 
 // 其他常数
 const int MAX_GEN_MOVES = 128; // 最大的生成走法数
@@ -61,7 +61,7 @@ const int HASH_PV = 3;         // PV节点的置换表项
 const int BOOK_SIZE = 16384;   // 开局库大小
 
 // 判断棋子是否在棋盘中的数组
-static const char ccInBoard[256] = {
+static const char inBoard[256] = {
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -81,7 +81,7 @@ static const char ccInBoard[256] = {
 };
 
 // 判断棋子是否在九宫的数组
-static const char ccInFort[256] = {
+static const char inJiuGong[256] = {
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -101,7 +101,7 @@ static const char ccInFort[256] = {
 };
 
 // 判断步长是否符合特定走法的数组，1=帅(将)，2=仕(士)，3=相(象)
-static const char ccLegalSpan[512] = {
+static const char legalMove[512] = {
 					   0, 0, 0, 0, 0, 0, 0, 0, 0,
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -138,7 +138,7 @@ static const char ccLegalSpan[512] = {
 };
 
 // 根据步长判断马是否蹩腿的数组
-static const char ccKnightPin[512] = {
+static const char maPin[512] = {
 							  0,  0,  0,  0,  0,  0,  0,  0,  0,
   0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
   0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
@@ -175,16 +175,16 @@ static const char ccKnightPin[512] = {
 };
 
 // 帅(将)的步长
-static const char ccKingDelta[4] = { -16, -1, 1, 16 };
+static const char jiangDelta[4] = { -16, -1, 1, 16 };
 // 仕(士)的步长
-static const char ccAdvisorDelta[4] = { -17, -15, 15, 17 };
+static const char shiDelta[4] = { -17, -15, 15, 17 };
 // 马的步长，以帅(将)的步长作为马腿
-static const char ccKnightDelta[4][2] = { {-33, -31}, {-18, 14}, {-14, 18}, {31, 33} };
+static const char maDelta[4][2] = { {-33, -31}, {-18, 14}, {-14, 18}, {31, 33} };
 // 马被将军的步长，以仕(士)的步长作为马腿
-static const char ccKnightCheckDelta[4][2] = { {-33, -18}, {-31, -14}, {14, 31}, {18, 33} };
+static const char maCheckDelta[4][2] = { {-33, -18}, {-31, -14}, {14, 31}, {18, 33} };
 
 // 棋盘初始设置
-static const BYTE cucpcStartup[256] = {
+static const BYTE initBoard[256] = {
   0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
   0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
   0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
@@ -204,7 +204,7 @@ static const BYTE cucpcStartup[256] = {
 };
 
 // 子力位置价值表
-static const BYTE cucvlPiecePos[7][256] = {
+static const BYTE piecePosValue[7][256] = {
   { // 帅(将)
 	0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 	0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
@@ -328,102 +328,107 @@ static const BYTE cucvlPiecePos[7][256] = {
 };
 
 // 判断棋子是否在棋盘中
-inline BOOL IN_BOARD(int sq) {
-	return ccInBoard[sq] != 0;
+inline BOOL isInBoard(int sq) {
+	return inBoard[sq] != 0;
+}
+
+// 判断棋子颜色
+inline BOOL pieceColor(int pc) {
+	return (pc >> 4) == 0;
 }
 
 // 判断棋子是否在九宫中
-inline BOOL IN_FORT(int sq) {
-	return ccInFort[sq] != 0;
+inline BOOL isInJiuGong(int sq) {
+	return inJiuGong[sq] != 0;
 }
 
 // 获得格子的横坐标
-inline int RANK_Y(int sq) {
-	return sq >> 4;
-}
-
-// 获得格子的纵坐标
-inline int FILE_X(int sq) {
+inline int getPosX(int sq) {
 	return sq & 15;
 }
 
+// 获得格子的纵坐标
+inline int getPosY(int sq) {
+	return sq >> 4;
+}
+
 // 根据纵坐标和横坐标获得格子
-inline int COORD_XY(int x, int y) {
+inline int _getPos_XY(int x, int y) {
 	return x + (y << 4);
 }
 
 // 翻转格子
-inline int SQUARE_FLIP(int sq) {
+inline int flipSquare(int sq) {
 	return 254 - sq;
 }
 
 // 纵坐标水平镜像
-inline int FILE_FLIP(int x) {
+inline int flipX(int x) {
 	return 14 - x;
 }
 
 // 横坐标垂直镜像
-inline int RANK_FLIP(int y) {
+inline int flipY(int y) {
 	return 15 - y;
 }
 
 // 格子水平镜像
-inline int MIRROR_SQUARE(int sq) {
-	return COORD_XY(FILE_FLIP(FILE_X(sq)), RANK_Y(sq));
+inline int mirrorXSquare(int sq) {
+	return _getPos_XY(flipX(getPosX(sq)), getPosY(sq));
 }
 
 // 格子水平镜像
-inline int SQUARE_FORWARD(int sq, int sd) {
+inline int squareForward(int sq, int sd) {
 	return sq - 16 + (sd << 5);
 }
 
 // 走法是否符合帅(将)的步长
-inline BOOL KING_SPAN(int sqSrc, int sqDst) {
-	return ccLegalSpan[sqDst - sqSrc + 256] == 1;
+inline BOOL isJiangMoveLegal(int sqSrc, int sqDst) {
+	return legalMove[sqDst - sqSrc + 256] == 1;
 }
 
 // 走法是否符合仕(士)的步长
-inline BOOL ADVISOR_SPAN(int sqSrc, int sqDst) {
-	return ccLegalSpan[sqDst - sqSrc + 256] == 2;
+inline BOOL isShiMoveLegal(int sqSrc, int sqDst) {
+	return legalMove[sqDst - sqSrc + 256] == 2;
 }
 
 // 走法是否符合相(象)的步长
-inline BOOL BISHOP_SPAN(int sqSrc, int sqDst) {
-	return ccLegalSpan[sqDst - sqSrc + 256] == 3;
+inline BOOL isXiangMoveLegal(int sqSrc, int sqDst) {
+	return legalMove[sqDst - sqSrc + 256] == 3;
 }
 
 // 相(象)眼的位置
-inline int BISHOP_PIN(int sqSrc, int sqDst) {
+inline int getXiangPin(int sqSrc, int sqDst) {
 	return (sqSrc + sqDst) >> 1;
 }
 
 // 马腿的位置
-inline int KNIGHT_PIN(int sqSrc, int sqDst) {
-	return sqSrc + ccKnightPin[sqDst - sqSrc + 256];
+inline int getMaPin(int sqSrc, int sqDst) {
+	return sqSrc + maPin[sqDst - sqSrc + 256];
 }
 
 // 是否未过河
-inline BOOL HOME_HALF(int sq, int sd) {
+inline BOOL isHomeHalf(int sq, int sd) {
 	return (sq & 0x80) != (sd << 7);
 }
 
 // 是否已过河
-inline BOOL AWAY_HALF(int sq, int sd) {
+inline BOOL isAwayHomeHalf(int sq, int sd) {
 	return (sq & 0x80) == (sd << 7);
 }
 
 // 是否在河的同一边
-inline BOOL SAME_HALF(int sqSrc, int sqDst) {
+inline BOOL isSameHalf(int sqSrc, int sqDst) {
 	return ((sqSrc ^ sqDst) & 0x80) == 0;
 }
 
 // 是否在同一行
-inline BOOL SAME_RANK(int sqSrc, int sqDst) {
+inline BOOL isSameY(int sqSrc, int sqDst) {
 	return ((sqSrc ^ sqDst) & 0xf0) == 0;
 }
 
 // 是否在同一列
-inline BOOL SAME_FILE(int sqSrc, int sqDst) {
+inline BOOL isSameX(int sqSrc, int sqDst) {
 	return ((sqSrc ^ sqDst) & 0x0f) == 0;
 }
 
@@ -454,7 +459,7 @@ inline int MOVE(int sqSrc, int sqDst) {
 
 // 走法水平镜像
 inline int MIRROR_MOVE(int mv) {
-	return MOVE(MIRROR_SQUARE(SRC(mv)), MIRROR_SQUARE(DST(mv)));
+	return MOVE(mirrorXSquare(SRC(mv)), mirrorXSquare(DST(mv)));
 }
 
 // RC4密码流生成器
@@ -560,7 +565,7 @@ struct MoveStruct {
 // 局面结构
 struct PositionStruct {
 	int sdPlayer;                   // 轮到谁走，0=红方，1=黑方
-	BYTE ucpcSquares[256];          // 棋盘上的棋子
+	BYTE squares[256];				// 棋盘上的棋子
 	int vlWhite, vlBlack;           // 红、黑双方的子力价值
 	int nDistance, nMoveNum;        // 距离根节点的步数，历史走法数
 	MoveStruct mvsList[MAX_MOVES];  // 历史走法信息列表
@@ -568,7 +573,7 @@ struct PositionStruct {
 
 	void ClearBoard(void) {         // 清空棋盘
 		sdPlayer = vlWhite = vlBlack = nDistance = 0;
-		memset(ucpcSquares, 0, 256);
+		memset(squares, 0, 256);
 		zobr.InitZero();
 	}
 	void SetIrrev(void) {           // 清空(初始化)历史走法信息
@@ -581,26 +586,26 @@ struct PositionStruct {
 		zobr.Xor(Zobrist.Player);
 	}
 	void AddPiece(int sq, int pc) { // 在棋盘上放一枚棋子
-		ucpcSquares[sq] = pc;
+		squares[sq] = pc;
 		// 红方加分，黑方(注意"cucvlPiecePos"取值要颠倒)减分
 		if (pc < 16) {
-			vlWhite += cucvlPiecePos[pc - 8][sq];
+			vlWhite += piecePosValue[pc - 8][sq];
 			zobr.Xor(Zobrist.Table[pc - 8][sq]);
 		}
 		else {
-			vlBlack += cucvlPiecePos[pc - 16][SQUARE_FLIP(sq)];
+			vlBlack += piecePosValue[pc - 16][flipSquare(sq)];
 			zobr.Xor(Zobrist.Table[pc - 9][sq]);
 		}
 	}
 	void DelPiece(int sq, int pc) { // 从棋盘上拿走一枚棋子
-		ucpcSquares[sq] = 0;
+		squares[sq] = 0;
 		// 红方减分，黑方(注意"cucvlPiecePos"取值要颠倒)加分
 		if (pc < 16) {
-			vlWhite -= cucvlPiecePos[pc - 8][sq];
+			vlWhite -= piecePosValue[pc - 8][sq];
 			zobr.Xor(Zobrist.Table[pc - 8][sq]);
 		}
 		else {
-			vlBlack -= cucvlPiecePos[pc - 16][SQUARE_FLIP(sq)];
+			vlBlack -= piecePosValue[pc - 16][flipSquare(sq)];
 			zobr.Xor(Zobrist.Table[pc - 9][sq]);
 		}
 	}
@@ -661,7 +666,7 @@ void PositionStruct::Startup(void) {
 	int sq, pc;
 	ClearBoard();
 	for (sq = 0; sq < 256; sq++) {
-		pc = cucpcStartup[sq];
+		pc = initBoard[sq];
 		if (pc != 0) {
 			AddPiece(sq, pc);
 		}
@@ -674,11 +679,11 @@ int PositionStruct::MovePiece(int mv) {
 	int sqSrc, sqDst, pc, pcCaptured;
 	sqSrc = SRC(mv);
 	sqDst = DST(mv);
-	pcCaptured = ucpcSquares[sqDst];
+	pcCaptured = squares[sqDst];
 	if (pcCaptured != 0) {
 		DelPiece(sqDst, pcCaptured);
 	}
-	pc = ucpcSquares[sqSrc];
+	pc = squares[sqSrc];
 	DelPiece(sqSrc, pc);
 	AddPiece(sqDst, pc);
 	return pcCaptured;
@@ -689,7 +694,7 @@ void PositionStruct::UndoMovePiece(int mv, int pcCaptured) {
 	int sqSrc, sqDst, pc;
 	sqSrc = SRC(mv);
 	sqDst = DST(mv);
-	pc = ucpcSquares[sqDst];
+	pc = squares[sqDst];
 	DelPiece(sqDst, pc);
 	AddPiece(sqSrc, pc);
 	if (pcCaptured != 0) {
@@ -730,65 +735,65 @@ int PositionStruct::GenerateMoves(int* mvs, BOOL bCapture) const {
 	for (sqSrc = 0; sqSrc < 256; sqSrc++) {
 
 		// 1. 找到一个本方棋子，再做以下判断：
-		pcSrc = ucpcSquares[sqSrc];
+		pcSrc = squares[sqSrc];
 		if ((pcSrc & pcSelfSide) == 0) {
 			continue;
 		}
 
 		// 2. 根据棋子确定走法
 		switch (pcSrc - pcSelfSide) {
-		case PIECE_KING:
+		case PIECE_JIANG:
 			for (i = 0; i < 4; i++) {
-				sqDst = sqSrc + ccKingDelta[i];
-				if (!IN_FORT(sqDst)) {
+				sqDst = sqSrc + jiangDelta[i];
+				if (!isInJiuGong(sqDst)) {
 					continue;
 				}
-				pcDst = ucpcSquares[sqDst];
+				pcDst = squares[sqDst];
 				if (bCapture ? (pcDst & pcOppSide) != 0 : (pcDst & pcSelfSide) == 0) {
 					mvs[nGenMoves] = MOVE(sqSrc, sqDst);
 					nGenMoves++;
 				}
 			}
 			break;
-		case PIECE_ADVISOR:
+		case PIECE_SHI:
 			for (i = 0; i < 4; i++) {
-				sqDst = sqSrc + ccAdvisorDelta[i];
-				if (!IN_FORT(sqDst)) {
+				sqDst = sqSrc + shiDelta[i];
+				if (!isInJiuGong(sqDst)) {
 					continue;
 				}
-				pcDst = ucpcSquares[sqDst];
+				pcDst = squares[sqDst];
 				if (bCapture ? (pcDst & pcOppSide) != 0 : (pcDst & pcSelfSide) == 0) {
 					mvs[nGenMoves] = MOVE(sqSrc, sqDst);
 					nGenMoves++;
 				}
 			}
 			break;
-		case PIECE_BISHOP:
+		case PIECE_XIANG:
 			for (i = 0; i < 4; i++) {
-				sqDst = sqSrc + ccAdvisorDelta[i];
-				if (!(IN_BOARD(sqDst) && HOME_HALF(sqDst, sdPlayer) && ucpcSquares[sqDst] == 0)) {
+				sqDst = sqSrc + shiDelta[i];
+				if (!(isInBoard(sqDst) && isHomeHalf(sqDst, sdPlayer) && squares[sqDst] == 0)) {
 					continue;
 				}
-				sqDst += ccAdvisorDelta[i];
-				pcDst = ucpcSquares[sqDst];
+				sqDst += shiDelta[i];
+				pcDst = squares[sqDst];
 				if (bCapture ? (pcDst & pcOppSide) != 0 : (pcDst & pcSelfSide) == 0) {
 					mvs[nGenMoves] = MOVE(sqSrc, sqDst);
 					nGenMoves++;
 				}
 			}
 			break;
-		case PIECE_KNIGHT:
+		case PIECE_MA:
 			for (i = 0; i < 4; i++) {
-				sqDst = sqSrc + ccKingDelta[i];
-				if (ucpcSquares[sqDst] != 0) {
+				sqDst = sqSrc + jiangDelta[i];
+				if (squares[sqDst] != 0) {
 					continue;
 				}
 				for (j = 0; j < 2; j++) {
-					sqDst = sqSrc + ccKnightDelta[i][j];
-					if (!IN_BOARD(sqDst)) {
+					sqDst = sqSrc + maDelta[i][j];
+					if (!isInBoard(sqDst)) {
 						continue;
 					}
-					pcDst = ucpcSquares[sqDst];
+					pcDst = squares[sqDst];
 					if (bCapture ? (pcDst & pcOppSide) != 0 : (pcDst & pcSelfSide) == 0) {
 						mvs[nGenMoves] = MOVE(sqSrc, sqDst);
 						nGenMoves++;
@@ -796,12 +801,12 @@ int PositionStruct::GenerateMoves(int* mvs, BOOL bCapture) const {
 				}
 			}
 			break;
-		case PIECE_ROOK:
+		case PIECE_JU:
 			for (i = 0; i < 4; i++) {
-				nDelta = ccKingDelta[i];
+				nDelta = jiangDelta[i];
 				sqDst = sqSrc + nDelta;
-				while (IN_BOARD(sqDst)) {
-					pcDst = ucpcSquares[sqDst];
+				while (isInBoard(sqDst)) {
+					pcDst = squares[sqDst];
 					if (pcDst == 0) {
 						if (!bCapture) {
 							mvs[nGenMoves] = MOVE(sqSrc, sqDst);
@@ -819,12 +824,12 @@ int PositionStruct::GenerateMoves(int* mvs, BOOL bCapture) const {
 				}
 			}
 			break;
-		case PIECE_CANNON:
+		case PIECE_PAO:
 			for (i = 0; i < 4; i++) {
-				nDelta = ccKingDelta[i];
+				nDelta = jiangDelta[i];
 				sqDst = sqSrc + nDelta;
-				while (IN_BOARD(sqDst)) {
-					pcDst = ucpcSquares[sqDst];
+				while (isInBoard(sqDst)) {
+					pcDst = squares[sqDst];
 					if (pcDst == 0) {
 						if (!bCapture) {
 							mvs[nGenMoves] = MOVE(sqSrc, sqDst);
@@ -837,8 +842,8 @@ int PositionStruct::GenerateMoves(int* mvs, BOOL bCapture) const {
 					sqDst += nDelta;
 				}
 				sqDst += nDelta;
-				while (IN_BOARD(sqDst)) {
-					pcDst = ucpcSquares[sqDst];
+				while (isInBoard(sqDst)) {
+					pcDst = squares[sqDst];
 					if (pcDst != 0) {
 						if ((pcDst & pcOppSide) != 0) {
 							mvs[nGenMoves] = MOVE(sqSrc, sqDst);
@@ -850,20 +855,20 @@ int PositionStruct::GenerateMoves(int* mvs, BOOL bCapture) const {
 				}
 			}
 			break;
-		case PIECE_PAWN:
-			sqDst = SQUARE_FORWARD(sqSrc, sdPlayer);
-			if (IN_BOARD(sqDst)) {
-				pcDst = ucpcSquares[sqDst];
+		case PIECE_BING:
+			sqDst = squareForward(sqSrc, sdPlayer);
+			if (isInBoard(sqDst)) {
+				pcDst = squares[sqDst];
 				if (bCapture ? (pcDst & pcOppSide) != 0 : (pcDst & pcSelfSide) == 0) {
 					mvs[nGenMoves] = MOVE(sqSrc, sqDst);
 					nGenMoves++;
 				}
 			}
-			if (AWAY_HALF(sqSrc, sdPlayer)) {
+			if (isAwayHomeHalf(sqSrc, sdPlayer)) {
 				for (nDelta = -1; nDelta <= 1; nDelta += 2) {
 					sqDst = sqSrc + nDelta;
-					if (IN_BOARD(sqDst)) {
-						pcDst = ucpcSquares[sqDst];
+					if (isInBoard(sqDst)) {
+						pcDst = squares[sqDst];
 						if (bCapture ? (pcDst & pcOppSide) != 0 : (pcDst & pcSelfSide) == 0) {
 							mvs[nGenMoves] = MOVE(sqSrc, sqDst);
 							nGenMoves++;
@@ -885,7 +890,7 @@ BOOL PositionStruct::LegalMove(int mv) const {
 
 	// 1. 判断起始格是否有自己的棋子
 	sqSrc = SRC(mv);
-	pcSrc = ucpcSquares[sqSrc];
+	pcSrc = squares[sqSrc];
 	pcSelfSide = SIDE_TAG(sdPlayer);
 	if ((pcSrc & pcSelfSide) == 0) {
 		return FALSE;
@@ -893,44 +898,44 @@ BOOL PositionStruct::LegalMove(int mv) const {
 
 	// 2. 判断目标格是否有自己的棋子
 	sqDst = DST(mv);
-	pcDst = ucpcSquares[sqDst];
+	pcDst = squares[sqDst];
 	if ((pcDst & pcSelfSide) != 0) {
 		return FALSE;
 	}
 
 	// 3. 根据棋子的类型检查走法是否合理
 	switch (pcSrc - pcSelfSide) {
-	case PIECE_KING:
-		return IN_FORT(sqDst) && KING_SPAN(sqSrc, sqDst);
-	case PIECE_ADVISOR:
-		return IN_FORT(sqDst) && ADVISOR_SPAN(sqSrc, sqDst);
-	case PIECE_BISHOP:
-		return SAME_HALF(sqSrc, sqDst) && BISHOP_SPAN(sqSrc, sqDst) &&
-			ucpcSquares[BISHOP_PIN(sqSrc, sqDst)] == 0;
-	case PIECE_KNIGHT:
-		sqPin = KNIGHT_PIN(sqSrc, sqDst);
-		return sqPin != sqSrc && ucpcSquares[sqPin] == 0;
-	case PIECE_ROOK:
-	case PIECE_CANNON:
-		if (SAME_RANK(sqSrc, sqDst)) {
+	case PIECE_JIANG:
+		return isInJiuGong(sqDst) && isJiangMoveLegal(sqSrc, sqDst);
+	case PIECE_SHI:
+		return isInJiuGong(sqDst) && isShiMoveLegal(sqSrc, sqDst);
+	case PIECE_XIANG:
+		return isSameHalf(sqSrc, sqDst) && isXiangMoveLegal(sqSrc, sqDst) &&
+			squares[getXiangPin(sqSrc, sqDst)] == 0;
+	case PIECE_MA:
+		sqPin = getMaPin(sqSrc, sqDst);
+		return sqPin != sqSrc && squares[sqPin] == 0;
+	case PIECE_JU:
+	case PIECE_PAO:
+		if (isSameY(sqSrc, sqDst)) {
 			nDelta = (sqDst < sqSrc ? -1 : 1);
 		}
-		else if (SAME_FILE(sqSrc, sqDst)) {
+		else if (isSameX(sqSrc, sqDst)) {
 			nDelta = (sqDst < sqSrc ? -16 : 16);
 		}
 		else {
 			return FALSE;
 		}
 		sqPin = sqSrc + nDelta;
-		while (sqPin != sqDst && ucpcSquares[sqPin] == 0) {
+		while (sqPin != sqDst && squares[sqPin] == 0) {
 			sqPin += nDelta;
 		}
 		if (sqPin == sqDst) {
-			return pcDst == 0 || pcSrc - pcSelfSide == PIECE_ROOK;
+			return pcDst == 0 || pcSrc - pcSelfSide == PIECE_JU;
 		}
-		else if (pcDst != 0 && pcSrc - pcSelfSide == PIECE_CANNON) {
+		else if (pcDst != 0 && pcSrc - pcSelfSide == PIECE_PAO) {
 			sqPin += nDelta;
-			while (sqPin != sqDst && ucpcSquares[sqPin] == 0) {
+			while (sqPin != sqDst && squares[sqPin] == 0) {
 				sqPin += nDelta;
 			}
 			return sqPin == sqDst;
@@ -938,11 +943,11 @@ BOOL PositionStruct::LegalMove(int mv) const {
 		else {
 			return FALSE;
 		}
-	case PIECE_PAWN:
-		if (AWAY_HALF(sqDst, sdPlayer) && (sqDst == sqSrc - 1 || sqDst == sqSrc + 1)) {
+	case PIECE_BING:
+		if (isAwayHomeHalf(sqDst, sdPlayer) && (sqDst == sqSrc - 1 || sqDst == sqSrc + 1)) {
 			return TRUE;
 		}
-		return sqDst == SQUARE_FORWARD(sqSrc, sdPlayer);
+		return sqDst == squareForward(sqSrc, sdPlayer);
 	default:
 		return FALSE;
 	}
@@ -957,28 +962,28 @@ BOOL PositionStruct::Checked() const {
 	// 找到棋盘上的帅(将)，再做以下判断：
 
 	for (sqSrc = 0; sqSrc < 256; sqSrc++) {
-		if (ucpcSquares[sqSrc] != pcSelfSide + PIECE_KING) {
+		if (squares[sqSrc] != pcSelfSide + PIECE_JIANG) {
 			continue;
 		}
 
 		// 1. 判断是否被对方的兵(卒)将军
-		if (ucpcSquares[SQUARE_FORWARD(sqSrc, sdPlayer)] == pcOppSide + PIECE_PAWN) {
+		if (squares[squareForward(sqSrc, sdPlayer)] == pcOppSide + PIECE_BING) {
 			return TRUE;
 		}
 		for (nDelta = -1; nDelta <= 1; nDelta += 2) {
-			if (ucpcSquares[sqSrc + nDelta] == pcOppSide + PIECE_PAWN) {
+			if (squares[sqSrc + nDelta] == pcOppSide + PIECE_BING) {
 				return TRUE;
 			}
 		}
 
 		// 2. 判断是否被对方的马将军(以仕(士)的步长当作马腿)
 		for (i = 0; i < 4; i++) {
-			if (ucpcSquares[sqSrc + ccAdvisorDelta[i]] != 0) {
+			if (squares[sqSrc + shiDelta[i]] != 0) {
 				continue;
 			}
 			for (j = 0; j < 2; j++) {
-				pcDst = ucpcSquares[sqSrc + ccKnightCheckDelta[i][j]];
-				if (pcDst == pcOppSide + PIECE_KNIGHT) {
+				pcDst = squares[sqSrc + maCheckDelta[i][j]];
+				if (pcDst == pcOppSide + PIECE_MA) {
 					return TRUE;
 				}
 			}
@@ -986,12 +991,12 @@ BOOL PositionStruct::Checked() const {
 
 		// 3. 判断是否被对方的车或炮将军(包括将帅对脸)
 		for (i = 0; i < 4; i++) {
-			nDelta = ccKingDelta[i];
+			nDelta = jiangDelta[i];
 			sqDst = sqSrc + nDelta;
-			while (IN_BOARD(sqDst)) {
-				pcDst = ucpcSquares[sqDst];
+			while (isInBoard(sqDst)) {
+				pcDst = squares[sqDst];
 				if (pcDst != 0) {
-					if (pcDst == pcOppSide + PIECE_ROOK || pcDst == pcOppSide + PIECE_KING) {
+					if (pcDst == pcOppSide + PIECE_JU || pcDst == pcOppSide + PIECE_JIANG) {
 						return TRUE;
 					}
 					break;
@@ -999,10 +1004,10 @@ BOOL PositionStruct::Checked() const {
 				sqDst += nDelta;
 			}
 			sqDst += nDelta;
-			while (IN_BOARD(sqDst)) {
-				int pcDst = ucpcSquares[sqDst];
+			while (isInBoard(sqDst)) {
+				int pcDst = squares[sqDst];
 				if (pcDst != 0) {
-					if (pcDst == pcOppSide + PIECE_CANNON) {
+					if (pcDst == pcOppSide + PIECE_PAO) {
 						return TRUE;
 					}
 					break;
@@ -1066,9 +1071,9 @@ void PositionStruct::Mirror(PositionStruct& posMirror) const {
 	int sq, pc;
 	posMirror.ClearBoard();
 	for (sq = 0; sq < 256; sq++) {
-		pc = ucpcSquares[sq];
+		pc = squares[sq];
 		if (pc != 0) {
-			posMirror.AddPiece(MIRROR_SQUARE(sq), pc);
+			posMirror.AddPiece(mirrorXSquare(sq), pc);
 		}
 	}
 	if (sdPlayer == 1) {
@@ -1096,7 +1101,7 @@ struct BookItem {
 // 与搜索有关的全局变量
 static struct {
 	int mvResult;                  // 电脑走的棋
-	int nHistoryTable[65536];      // 历史表
+	int historyTable[65536];      // 历史表
 	int mvKillers[LIMIT_DEPTH][2]; // 杀手走法表
 	HashItem HashTable[HASH_SIZE]; // 置换表
 	int nBookSize;                 // 开局库大小
@@ -1269,7 +1274,7 @@ static BYTE cucMvvLva[24] = {
 
 // 求MVV/LVA值
 inline int MvvLva(int mv) {
-	return (cucMvvLva[pos.ucpcSquares[DST(mv)]] << 3) - cucMvvLva[pos.ucpcSquares[SRC(mv)]];
+	return (cucMvvLva[pos.squares[DST(mv)]] << 3) - cucMvvLva[pos.squares[SRC(mv)]];
 }
 
 // "qsort"按MVV/LVA值排序的比较函数
@@ -1279,7 +1284,7 @@ static int CompareMvvLva(const void* lpmv1, const void* lpmv2) {
 
 // "qsort"按历史表排序的比较函数
 static int CompareHistory(const void* lpmv1, const void* lpmv2) {
-	return Search.nHistoryTable[*(int*)lpmv2] - Search.nHistoryTable[*(int*)lpmv1];
+	return Search.historyTable[*(int*)lpmv2] - Search.historyTable[*(int*)lpmv1];
 }
 
 
@@ -1359,7 +1364,7 @@ int SortStruct::Next(void) {
 // 对最佳走法的处理
 inline void SetBestMove(int mv, int nDepth) {
 	int* lpmvKillers;
-	Search.nHistoryTable[mv] += nDepth * nDepth;
+	Search.historyTable[mv] += nDepth * nDepth;
 	lpmvKillers = Search.mvKillers[pos.nDistance];
 	if (lpmvKillers[0] != mv) {
 		lpmvKillers[1] = lpmvKillers[0];
@@ -1573,7 +1578,7 @@ static void SearchMain(void) {
 	int mvs[MAX_GEN_MOVES];
 
 	// 初始化
-	memset(Search.nHistoryTable, 0, 65536 * sizeof(int));       // 清空历史表
+	memset(Search.historyTable, 0, 65536 * sizeof(int));       // 清空历史表
 	memset(Search.mvKillers, 0, LIMIT_DEPTH * 2 * sizeof(int)); // 清空杀手走法表
 	memset(Search.HashTable, 0, HASH_SIZE * sizeof(HashItem));  // 清空置换表
 	t = clock();       // 初始化定时器
@@ -1655,7 +1660,7 @@ DLL_EXPORT int getPlayer()
 }
 DLL_EXPORT BYTE* getSquares()
 {
-	return pos.ucpcSquares;
+	return pos.squares;
 }
 DLL_EXPORT int getValRed()
 {
@@ -1726,7 +1731,7 @@ DLL_EXPORT inline int getMove(int src, int dst)
 // 走法水平镜像
 DLL_EXPORT inline int mirrorXMove(int mv)
 {
-	return getMove(MIRROR_SQUARE(getSrc(mv)), MIRROR_SQUARE(getDst(mv)));
+	return getMove(mirrorXSquare(getSrc(mv)), mirrorXSquare(getDst(mv)));
 }
 
 // 根据纵坐标和横坐标获得格子
