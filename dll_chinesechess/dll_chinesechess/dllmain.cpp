@@ -1117,15 +1117,16 @@ static void LoadBook() {
 	//}
 	//memcpy(Search.BookTable, LockResource(LoadResource(nullptr, hrsrc)),
 	//	Search.nBookSize * sizeof(BookItem));
-	ifstream fin("dll_chinesechess\\dll_chinesechess\\BOOK.DAT", ios::in || ios::binary);
-	string ss{ istreambuf_iterator<char>(fin), istreambuf_iterator<char>() };
+	//ifstream fin("dll_chinesechess\\dll_chinesechess\\BOOK.DAT", ios::in || ios::binary);
+	//string ss{ istreambuf_iterator<char>(fin), istreambuf_iterator<char>() };
 	//ofstream fout("out.txt");
 	//fout << ss.length() << endl;
 	//vector<char> book;
 	//for (char c; fin.get(c);)
 	//	book.push_back(c);
-	Search.nBookSize = ss.length() / sizeof(BookItem);
-	memcpy(Search.BookTable, ss.c_str(), ss.size());
+	//Search.nBookSize = ss.length() / sizeof(BookItem);
+	//memcpy(Search.BookTable, ss.c_str(), ss.size());
+	Search.nBookSize = 0;
 }
 
 static int CompareBook(const void* lpbk1, const void* lpbk2) {
