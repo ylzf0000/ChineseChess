@@ -51,6 +51,27 @@ DLL_EXPORT int getGameState()
 {
 	return board.GameState();
 }
+
+DLL_EXPORT BYTE* newPointer2Byte(int size)
+{
+	return new BYTE[size];
+}
+
+DLL_EXPORT void deletePointer2Byte(BYTE* p)
+{
+	delete[] p;
+}
+
+DLL_EXPORT int* newPointer2Int(int size)
+{
+	return new int[size];
+}
+
+DLL_EXPORT void deletePointer2Int(int* p)
+{
+	delete[] p;
+}
+
 //DLL_EXPORT BOOL isLegalMove(int mv)
 //{
 //	return board.IsLegalMove(mv);

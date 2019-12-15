@@ -47,10 +47,12 @@ class ChineseChessEnv(BoardGameEnv):
         return bool(isLegalMove(board, action, self.p11_01(p)))
 
     def get_valid(self, state):
-        board, p = state
-        p_mvs = POINTER(c_int)()
-        n = generateMoves(board, byref(p_mvs), self.p11_01(p))
+        board, player = state
+        # p_mvs = POINTER(c_int)()
+        p_mvs = newPointer2Int(16384)
+        n = generateMoves(board, byref(p_mvs), self.p11_01(player))
         mvs = [p_mvs[i] for i in range(n)]
+        deletePointer2Int(p_mvs)
         return mvs
 
     def has_valid(self, state):

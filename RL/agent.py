@@ -14,6 +14,7 @@ from RL import boardgame2
 # import RL.boardgame2 as boardgame2
 
 from RL.boardgame2 import BLACK, WHITE
+from dll_func import newPointer2Byte, deletePointer2Byte
 
 logging.basicConfig(stream=sys.stdout, level=logging.DEBUG,
                     format='%(asctime)s [%(levelname)s] %(message)s')
@@ -121,11 +122,14 @@ class AlphaZeroAgent:
     def decide(self, observation, greedy=False, return_prob=False):
         # 计算策略
         board, player = observation
-        board = np.array([float(board[i]) for i in range(256)]).reshape(16, 16)
-        canonical_board = player * board
+        cpboard = newPointer2Byte(256)
+        for i in range(256):
+            cpboard[i] = board[i] * player
+        npboard = np.array([float(board[i]) for i in range(256)]).reshape(16, 16)
+        canonical_board = player * npboard
         s = boardgame2.strfboard(canonical_board)
         while self.count[s].sum() < self.sim_count:  # 多次 MCTS 搜索
-            self.search(canonical_board, prior_noise=True)
+            self.search(cpboard, npboard, prior_noise=True)
         prob = self.count[s] / self.count[s].sum()
 
         # 采样
@@ -133,6 +137,7 @@ class AlphaZeroAgent:
         location = np.unravel_index(location_index, prob.shape)
         if return_prob:
             return location, prob
+        deletePointer2Byte(cpboard)
         return location
 
     def learn(self, dfs):
@@ -146,8 +151,8 @@ class AlphaZeroAgent:
             self.net.fit(canonical_boards, [probs, vs], verbose=0)  # 训练
         self.reset_mcts()
 
-    def search(self, board, prior_noise=False):  # MCTS 搜索
-        s = boardgame2.strfboard(board)
+    def search(self, board, npboard, prior_noise=False):  # MCTS 搜索
+        s = boardgame2.strfboard(npboard)
 
         if s not in self.winner:
             self.winner[s] = self.env.get_winner((board, BLACK))  # 计算赢家
@@ -155,7 +160,7 @@ class AlphaZeroAgent:
             return self.winner[s]
 
         if s not in self.policy:  # 未计算过策略的叶子节点
-            pis, vs = self.net.predict(board[np.newaxis])
+            pis, vs = self.net.predict(npboard[np.newaxis])
             pi, v = pis[0], vs[0]
             valid = self.env.get_valid((board, BLACK))
             masked_pi = pi * valid
@@ -173,7 +178,7 @@ class AlphaZeroAgent:
                math.sqrt(count_sum) / (1. + self.count[s])
         if prior_noise:  # 先验噪声
             alpha = 1. / self.valid[s].sum()
-            noise = np.random.gamma(alpha, 1., board.shape)
+            noise = np.random.gamma(alpha, 1., npboard.shape)
             noise *= self.valid[s]
             noise /= noise.sum()
             prior = (1. - self.prior_exploration_fraction) * \
@@ -183,12 +188,15 @@ class AlphaZeroAgent:
             prior = self.policy[s]
         ub = np.where(self.valid[s], self.q[s] + coef * prior, np.nan)
         location_index = np.nanargmax(ub)
-        location = np.unravel_index(location_index, board.shape)
+        location = np.unravel_index(location_index, npboard.shape)
 
         (next_board, next_player), _, _, _ = self.env.next_step(
             (board, BLACK), np.array(location))
         next_canonical_board = next_player * next_board
-        next_v = self.search(next_canonical_board)  # 递归搜索
+        cpboard = board[:256]
+        # for i in range(256):
+        #     cpboard[i] = ne
+        next_v = self.search(board, next_canonical_board)  # 递归搜索
         v = next_player * next_v
 
         self.count[s][location] += 1

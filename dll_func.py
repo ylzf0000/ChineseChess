@@ -38,7 +38,16 @@ def init_DLL(platform, cfg):
     # DLL_EXPORT BOOL makeMove(BYTE* squares, int mv, int player);
     dll_cc.makeMove.argtypes = (POINTER(c_ubyte), c_int, c_int)
     dll_cc.makeMove.restype = c_int
+    # DLL_EXPORT BYTE* newPointer2Byte(int size)
+    dll_cc.newPointer2Byte.argtypes = (c_int,)
+    dll_cc.newPointer2Byte.restype = POINTER(c_ubyte)
+    # DLL_EXPORT void deletePointer2Byte(BYTE* p)
+    dll_cc.deletePointer2Byte.argtypes = (POINTER(c_ubyte),)
 
+    dll_cc.newPointer2Int.argtypes = (c_int,)
+    dll_cc.newPointer2Int.restype = POINTER(c_int)
+    # DLL_EXPORT void deletePointer2Byte(BYTE* p)
+    dll_cc.deletePointer2Int.argtypes = (POINTER(c_int),)
 
 def aiCustomMove():
     return dll_cc.aiMove()
@@ -134,3 +143,26 @@ def hasLegalMove(squares, player):
 # DLL_EXPORT BOOL makeMove(BYTE* squares, int mv, int player);
 def makeMove(squares, mv, player):
     return dll_cc.makeMove(squares, mv, player)
+
+# DLL_EXPORT BYTE* newPointer2Byte(int size)
+# {
+# 	return new BYTE[size];
+# }
+
+def newPointer2Byte(size):
+    return dll_cc.newPointer2Byte(size)
+
+def newPointer2Int(size):
+    return dll_cc.newPointer2Int(size)
+
+# DLL_EXPORT void deletePointer2Byte(BYTE* p)
+# {
+# 	delete p;
+# }
+
+def deletePointer2Byte(p):
+    dll_cc.deletePointer2Byte(p)
+
+def deletePointer2Int(p):
+    dll_cc.deletePointer2Int(p)
+
