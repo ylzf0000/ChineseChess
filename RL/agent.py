@@ -9,13 +9,14 @@ import numpy as np
 import pandas as pd
 import gym
 import tensorflow as tf
-# from tensorflow import keras
 
 from RL import boardgame2
+from RL.boardgame2.ChineseChessEnv import board_to_input
+from .boardgame2 import ChineseChessEnv
+from .boardgame2 import BLACK, WHITE
 
-# from RL.boardgame2 import BLACK, WHITE
-RED = 1  # BLACK
-BLACK = -1  # WHITE
+# RED = 1  # BLACK
+# BLACK = -1  # WHITE
 logging.basicConfig(stream=sys.stdout, level=logging.DEBUG,
                     format='%(asctime)s [%(levelname)s] %(message)s')
 env = gym.make('ChineseChess-v0')
@@ -44,6 +45,10 @@ class AlphaZeroAgent:
     def __init__(self, env, batches=1, batch_size=4096,
                  kwargs={}, load=None, sim_count=800,
                  c_init=1.25, c_base=19652., prior_exploration_fraction=0.25):
+
+        self.prob_size = 2086
+        self.step = 0
+
         self.env = env
         self.board = np.zeros_like(env.board)
         self.batches = batches
@@ -59,8 +64,10 @@ class AlphaZeroAgent:
     def build_network(self, conv_filters, residual_filters, policy_filters,
                       learning_rate=0.001, regularizer=keras.regularizers.l2(1e-4)):
         # 公共部分
-        inputs = keras.Input(shape=self.board.shape)
-        x = keras.layers.Reshape(self.board.shape + (1,))(inputs)
+        inputs = keras.Input(shape=(9, 10, 14))
+        x = keras.layers.Reshape((9, 10, 14))(inputs)
+        # inputs = keras.Input(shape=self.board.shape)
+        # x = keras.layers.Reshape(self.board.shape + (1,))(inputs)
         for conv_filter in conv_filters:
             z = keras.layers.Conv2D(conv_filter, 3, padding='same',
                                     kernel_regularizer=regularizer,
@@ -78,11 +85,18 @@ class AlphaZeroAgent:
                                     bias_regularizer=regularizer)(x)
             y = keras.layers.BatchNormalization()(z)
             x = keras.layers.ReLU()(y)
+
+        # t = keras.layers.Reshape([9 * 10 * 2])(x)
+        # probs = keras.layers.Dense(self.prob_size)(t)
+        # logits = keras.layers.Conv2D(1, 3, padding='same',
+        #                              kernel_regularizer=regularizer,
+        #                              bias_regularizer=regularizer)(t)
         logits = keras.layers.Conv2D(1, 3, padding='same',
                                      kernel_regularizer=regularizer, bias_regularizer=regularizer)(x)
         flattens = keras.layers.Flatten()(logits)
         softmaxs = keras.layers.Softmax()(flattens)
-        probs = keras.layers.Reshape(self.board.shape)(softmaxs)
+        probs = keras.layers.Dense(self.prob_size)(softmaxs)
+        # probs = keras.layers.Reshape(self.prob_size, )(softmaxs)
 
         # 价值部分
         z = keras.layers.Conv2D(1, 3, padding='same',
@@ -98,8 +112,10 @@ class AlphaZeroAgent:
         model = keras.Model(inputs=inputs, outputs=[probs, vs])
 
         def categorical_crossentropy_2d(y_true, y_pred):
-            labels = tf.reshape(y_true, [-1, self.board.size])
-            preds = tf.reshape(y_pred, [-1, self.board.size])
+            labels = tf.reshape(y_true, [-1, self.prob_size])
+            preds = tf.reshape(y_pred, [-1, self.prob_size])
+            # labels = tf.reshape(y_true, [-1, self.board.size])
+            # preds = tf.reshape(y_pred, [-1, self.board.size])
             return keras.losses.categorical_crossentropy(labels, preds)
 
         loss = [categorical_crossentropy_2d, keras.losses.MSE]
@@ -109,15 +125,19 @@ class AlphaZeroAgent:
 
     def reset_mcts(self):
         def zero_board_factory():  # 用于构造 default_dict
-            return np.zeros_like(self.board, dtype=float)
+            return np.zeros(shape=(self.prob_size,), dtype=float)
+            # return np.zeros_like((self.prob_size,), dtype=float)
+            # return np.zeros_like(self.board, dtype=float)
 
         self.q = collections.defaultdict(zero_board_factory)
+        # print(self.prob_size)
         # q值估计: board -> board
         self.count = collections.defaultdict(zero_board_factory)
         # q值计数: board -> board
         self.policy = {}  # 策略: board -> board
         self.valid = {}  # 有效位置: board -> board
         self.winner = {}  # 赢家: board -> None or int
+        self.step = 0
 
     def decide(self, observation, greedy=False, return_prob=False):
         # 计算策略
@@ -125,7 +145,9 @@ class AlphaZeroAgent:
         canonical_board = player * board
         s = boardgame2.strfboard(canonical_board)
         while self.count[s].sum() < self.sim_count:  # 多次 MCTS 搜索
+            self.step += 1
             self.search(canonical_board, prior_noise=True)
+            self.step -= 1
         prob = self.count[s] / self.count[s].sum()
 
         # 采样
@@ -147,15 +169,18 @@ class AlphaZeroAgent:
         self.reset_mcts()
 
     def search(self, board, prior_noise=False):  # MCTS 搜索
-        s = boardgame2.strfboard(board)
 
+
+        s = boardgame2.strfboard(board)
         if s not in self.winner:
             self.winner[s] = self.env.get_winner((board, BLACK))  # 计算赢家
         if self.winner[s] is not None:  # 赢家确定的情况
             return self.winner[s]
-
+        if self.step >= 100:
+            return 0
         if s not in self.policy:  # 未计算过策略的叶子节点
-            pis, vs = self.net.predict(board[np.newaxis])
+            # pis, vs = self.net.predict(board[np.newaxis])
+            pis, vs = self.net.predict(board_to_input(board)[np.newaxis])
             pi, v = pis[0], vs[0]
             valid = self.env.get_valid((board, BLACK))
             masked_pi = pi * valid
@@ -173,7 +198,8 @@ class AlphaZeroAgent:
                math.sqrt(count_sum) / (1. + self.count[s])
         if prior_noise:  # 先验噪声
             alpha = 1. / self.valid[s].sum()
-            noise = np.random.gamma(alpha, 1., board.shape)
+            noise = np.random.gamma(alpha, 1., self.prob_size)
+            # noise = np.random.gamma(alpha, 1., board.shape)
             noise *= self.valid[s]
             noise /= noise.sum()
             prior = (1. - self.prior_exploration_fraction) * \
@@ -183,14 +209,16 @@ class AlphaZeroAgent:
             prior = self.policy[s]
         ub = np.where(self.valid[s], self.q[s] + coef * prior, np.nan)
         location_index = np.nanargmax(ub)
-        location = np.unravel_index(location_index, board.shape)
+        location = np.unravel_index(location_index, (self.prob_size,))
+        # location = np.unravel_index(location_index, board.shape)
 
         (next_board, next_player), _, _, _ = self.env.next_step(
             (board, BLACK), np.array(location))
         next_canonical_board = next_player * next_board
+        self.step += 1
         next_v = self.search(next_canonical_board)  # 递归搜索
+        self.step -= 1
         v = next_player * next_v
-
         self.count[s][location] += 1
         self.q[s][location] += (v - self.q[s][location]) / \
                                self.count[s][location]
@@ -207,7 +235,7 @@ def self_play(env, agent, return_trajectory=False, verbose=False):
         if verbose:
             print(boardgame2.strfboard(board))
             logging.info('第 {} 步：玩家 {}, 动作 {}'.format(step, player,
-                    action))
+                                                      action))
         observation, winner, done, _ = env.step(action)
         if return_trajectory:
             trajectory.append((player, board, prob))
@@ -218,7 +246,7 @@ def self_play(env, agent, return_trajectory=False, verbose=False):
             break
     if return_trajectory:
         df_trajectory = pd.DataFrame(trajectory,
-                columns=['player', 'board', 'prob'])
+                                     columns=['player', 'board', 'prob'])
         df_trajectory['winner'] = winner
         return df_trajectory
     else:

@@ -5,12 +5,77 @@ import numpy as np
 
 from .env import BoardGameEnv
 
+
 def strfboard(board):
     s = ''
     for i in range(9):
         for j in range(10):
             s += str(board[i][j]) + ' '
     return s
+
+
+letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i']
+dict_letters = {'a': 0,
+                'b': 1,
+                'c': 2,
+                'd': 3,
+                'e': 4,
+                'f': 5,
+                'g': 6,
+                'h': 7,
+                'i': 8,
+                }
+numbers = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
+dict_numbers = {'0': 0, '1': 1, '2': 2, '3': 3, '4': 4,
+                '5': 5, '6': 6, '7': 7, '8': 8, '9': 9}
+
+
+def mv_to_str(x1, y1, x2, y2):
+    return letters[x1] + numbers[y1] + letters[x2] + numbers[y2]
+
+
+def str_to_mv(s):
+    return dict_letters[s[0]], dict_numbers[s[1]], \
+           dict_letters[s[2]], dict_numbers[s[3]]
+
+
+dict_mv = {}
+
+
+# 创建所有合法走子UCI，size 2086
+def create_uci_labels():
+    labels_array = []
+    Advisor_labels = ['d7e8', 'e8d7', 'e8f9', 'f9e8', 'd0e1', 'e1d0', 'e1f2', 'f2e1',
+                      'd2e1', 'e1d2', 'e1f0', 'f0e1', 'd9e8', 'e8d9', 'e8f7', 'f7e8']
+    Bishop_labels = ['a2c4', 'c4a2', 'c0e2', 'e2c0', 'e2g4', 'g4e2', 'g0i2', 'i2g0',
+                     'a7c9', 'c9a7', 'c5e7', 'e7c5', 'e7g9', 'g9e7', 'g5i7', 'i7g5',
+                     'a2c0', 'c0a2', 'c4e2', 'e2c4', 'e2g0', 'g0e2', 'g4i2', 'i2g4',
+                     'a7c5', 'c5a7', 'c9e7', 'e7c9', 'e7g5', 'g5e7', 'g9i7', 'i7g9']
+
+    for l1 in range(9):
+        for n1 in range(10):
+            destinations = [(t, n1) for t in range(9)] + \
+                           [(l1, t) for t in range(10)] + \
+                           [(l1 + a, n1 + b) for (a, b) in
+                            [(-2, -1), (-1, -2), (-2, 1), (1, -2), (2, -1), (-1, 2), (2, 1), (1, 2)]]  # 马走日
+            for (l2, n2) in destinations:
+                if (l1, n1) != (l2, n2) and l2 in range(9) and n2 in range(10):
+                    move = letters[l1] + numbers[n1] + letters[l2] + numbers[n2]
+                    dict_mv[move] = len(labels_array)
+                    labels_array.append(move)
+
+    for p in Advisor_labels:
+        dict_mv[p] = len(labels_array)
+        labels_array.append(p)
+
+    for p in Bishop_labels:
+        dict_mv[p] = len(labels_array)
+        labels_array.append(p)
+
+    return labels_array
+
+
+labels_mv = create_uci_labels()
 
 EMPTY = 0
 RED = 1  # BLACK
@@ -95,9 +160,6 @@ def ma_pin(x1, y1, x2, y2):
     if not (dx, dy) in ma_delta2:
         return x1, y1
     return x1 + ma_pin_dict[dx], y1 + ma_pin_dict[dy]
-
-
-
 
 
 def is_inboard(x, y):
@@ -201,7 +263,7 @@ def gen_moves(board, player):
             elif piece == PIECE_MA:
                 for i in range(4):
                     pin_x, pin_y = x + jiang_delta[i][0], y + jiang_delta[i][1]
-                    if board[pin_x][pin_y] != 0:
+                    if not is_inboard(pin_x, pin_y) or board[pin_x][pin_y] != 0:
                         continue
                     for j in range(2):
                         dst_x, dst_y = x + ma_delta[i][j][0], y + ma_delta[i][j][1]
@@ -331,18 +393,23 @@ def is_checked(board, player):
     if not ok:
         return False
     # 1.Bing
-    if board[src_x][sq_forward(src_y, player)] == opp_tag + PIECE_BING:
+    x, y = src_x, sq_forward(src_y, player)
+    if is_inboard(x, y) and board[x][y] == opp_tag + PIECE_BING:
         return True
     for dx in (-1, 1):
-        if board[src_x + dx][src_y] == opp_tag + PIECE_BING:
+        x, y = src_x + dx, src_y
+        if is_inboard(x, y) and board[x][y] == opp_tag + PIECE_BING:
             return True
     # 2.Ma
     for i in range(4):
-        if board[src_x + shi_delta[i][0]][src_y + shi_delta[i][1]]:
+        x, y = src_x + shi_delta[i][0], src_y + shi_delta[i][1]
+        if (not is_inboard(x, y)) or \
+                (is_inboard(x, y) and board[x][y] != 0):
             continue
         for j in range(2):
-            pc_dst = board[src_x + ma_check_delta[i][j][0]][src_y + ma_check_delta[i][j][1]]
-            if pc_dst == opp_tag + PIECE_MA:
+            x = src_x + ma_check_delta[i][j][0]
+            y = src_y + ma_check_delta[i][j][1]
+            if is_inboard(x, y) and board[x][y] == opp_tag + PIECE_MA:
                 return True
     # 3.Ju Pao Jiang
     for i in range(4):
@@ -417,6 +484,17 @@ def is_jiang_exist(board, player):
     return False
 
 
+def board_to_input(board):
+    input = np.zeros(shape=(9, 10, 14))
+    for i in range(9):
+        for j in range(10):
+            if board[i][j] != 0:
+                n = board[i][j] - 16 + 7 \
+                    if board[i][j] >= 16 else board[i][j] - 8
+                input[i][j][n] = 1
+    return input
+
+
 class ChineseChessEnv(BoardGameEnv):
 
     def __init__(self, board_shape=(9, 10), render_characters='+ox'):
@@ -428,16 +506,22 @@ class ChineseChessEnv(BoardGameEnv):
         super().reset()
         self.board = init_board
         self.player = RED
+        self.step = 0
         return self.board, self.player
 
     def is_valid(self, state, action):
         board, player = state
-        return is_legalmove(board, action[0], action[1],
-                            action[2], action[3], player)
+        x1, x2, y1, y2 = str_to_mv(labels_mv[action[0]])
+        return is_legalmove(board, x1, x2, y1, y2, player)
 
     def get_valid(self, state):
         board, player = state
-        return gen_moves(board, player)
+        mvs = gen_moves(board, player)
+        A = np.zeros((2086,), dtype=float)
+        for mv in mvs:
+            str = mv_to_str(mv[0], mv[1], mv[2], mv[3])
+            A[dict_mv[str]] = 1
+        return A
 
     def has_valid(self, state):
         return True
@@ -450,9 +534,13 @@ class ChineseChessEnv(BoardGameEnv):
             return -player
         if not is_jiang_exist(board, -player):
             return player
+        if self.step >= 100:
+            return 0
         return None
 
     def get_next_state(self, state, action):
         board, player = state
-        move_piece(board, action[0], action[1], action[2], action[3])
+        x1, x2, y1, y2 = str_to_mv(labels_mv[action[0]])
+        move_piece(board, x1, x2, y1, y2)
+        self.step += 1
         return board, -player
