@@ -1,7 +1,6 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QWidget, QMessageBox
 from PyQt5.Qt import QPixmap, QPainter
-from dll_func import *
 
 
 class QChessBoard(QWidget):

@@ -3,7 +3,6 @@ import sys
 from ui_mainwindow import *
 from PyQt5.QtWidgets import QApplication, QMainWindow
 from PyQt5.Qt import QPixmap, QPainter
-from dll_func import *
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):

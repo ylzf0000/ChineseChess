@@ -12,6 +12,12 @@ EMPTY = 0
 BLACK = 1
 WHITE = -1
 
+def strfboard(board):
+    s = ''
+    for i in range(9):
+        for j in range(10):
+            s += str(board[i][j]) + ' '
+    return s
 
 # def strfboard(board, render_characters='+ox', end='\n'):
 #     """
@@ -34,28 +40,6 @@ WHITE = -1
 #             s += c
 #         s += end
 #     return s[:-len(end)]
-
-
-def strfboard(board, render_characters='+ox', end='\n'):
-    """
-    Format a board as a string
-
-    Parameters
-    ----
-    board : np.array
-    render_characters : str
-    end : str
-
-    Returns
-    ----
-    s : str
-    """
-    s = ''
-    for i in range(16):
-        for j in range(16):
-            s += str(board[i])
-        s += end
-    return s[:-len(end)]
 
 def is_index(board, location):
     """
