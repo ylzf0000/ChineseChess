@@ -174,9 +174,9 @@ class AlphaZeroAgent:
         self.reset_mcts()
 
     def search(self, board, player, prior_noise=False):  # MCTS 搜索
-        print(sys._getframe().f_code.co_name, self.step)
-        if self.step == 1:
-            print('?')
+        # print(sys._getframe().f_code.co_name, self.step)
+        # if self.step == 1:
+        #     print('?')
         s = boardgame2.strfboard(board)
         if s not in self.winner:
             self.winner[s] = self.env.get_winner((board, player))  # 计算赢家
@@ -282,7 +282,7 @@ def train():
         dfs_trajectory = []
         for episode in range(train_episodes_per_iteration):
             df_trajectory = self_play(env, agent,
-                                      return_trajectory=True, verbose=False)
+                                      return_trajectory=True, verbose=True)
             logging.info('训练 {} 回合 {}: 收集到 {} 条经验'.format(
                 iteration, episode, len(df_trajectory)))
             dfs_trajectory.append(df_trajectory)

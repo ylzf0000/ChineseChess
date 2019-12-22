@@ -510,7 +510,7 @@ class ChineseChessEnv(BoardGameEnv):
         super().reset()
         self.board = init_board
         self.player = RED
-        self.step = 0
+        self.depth = 0
         return self.board, self.player
 
     def is_valid(self, state, action):
@@ -542,7 +542,7 @@ class ChineseChessEnv(BoardGameEnv):
             return -player
         if not is_jiang_exist(board, -player):
             return player
-        if self.step >= 100:
+        if self.depth >= 100:
             return 0
         return None
 
@@ -551,5 +551,5 @@ class ChineseChessEnv(BoardGameEnv):
         board, player = state
         x1, x2, y1, y2 = str_to_mv(labels_mv[action[0]])
         move_piece(board, x1, x2, y1, y2)
-        self.step += 1
+        self.depth += 1
         return board, -player
