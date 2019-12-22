@@ -103,8 +103,7 @@ arr_injiugong = np.array([
     [0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 1, 1, 1, 0, 0, 0],
     [0, 0, 0, 1, 1, 1, 0, 0, 0],
-    [0, 0, 0, 1, 1, 1, 0, 0, 0]
-]).T
+    [0, 0, 0, 1, 1, 1, 0, 0, 0]]).T
 
 jiang_delta = ((1, 0), (0, 1), (-1, 0), (0, -1))
 shi_delta = ((1, 1), (-1, 1), (-1, -1), (1, -1))
@@ -274,7 +273,7 @@ def gen_moves(board, player):
                         if pc_dst == 0:
                             mvs.append((x, y, dst_x, dst_y))
                         else:
-                            if (pc_dst & opp_tag) == 1:
+                            if (pc_dst & opp_tag) != 0:
                                 mvs.append((x, y, dst_x, dst_y))
                             break
                         dst_x += jiang_delta[i][0]
@@ -295,7 +294,7 @@ def gen_moves(board, player):
                     while is_inboard(dst_x, dst_y):
                         pc_dst = board[dst_x][dst_y]
                         if pc_dst != 0:
-                            if (pc_dst & opp_tag) == 1:
+                            if (pc_dst & opp_tag) != 0:
                                 mvs.append((x, y, dst_x, dst_y))
                             break
                         dst_x += jiang_delta[i][0]
@@ -327,7 +326,7 @@ def is_legalmove(board, x1, y1, x2, y2, player):
         return False
     # 2.
     pc_dst = board[x2][y2]
-    if pc_dst & self_tag == 1:
+    if pc_dst & self_tag != 0:
         return False
     # 3.
     piece = pc_src - self_tag
@@ -356,7 +355,7 @@ def is_legalmove(board, x1, y1, x2, y2, player):
             pin_y += dy
         if pin_x == x2 and pin_y == y2:
             return pc_dst == 0 or (pc_src - self_tag == PIECE_JU)
-        elif pc_dst != 0 and (pc_src - self_tag == PIECE_PAO):
+        elif (pc_dst != 0) and (pc_src - self_tag == PIECE_PAO):
             pin_x += dx
             pin_y += dy
             while pin_x != x2 and pin_y != y2 and board[pin_x][pin_y] == 0:
