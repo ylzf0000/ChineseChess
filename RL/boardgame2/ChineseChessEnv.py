@@ -37,12 +37,12 @@ dict_mv = {}
 # 创建所有合法走子UCI，size 2086
 def create_uci_labels():
     labels_array = []
-    Advisor_labels = ['d7e8', 'e8d7', 'e8f9', 'f9e8', 'd0e1', 'e1d0', 'e1f2', 'f2e1',
-                      'd2e1', 'e1d2', 'e1f0', 'f0e1', 'd9e8', 'e8d9', 'e8f7', 'f7e8']
-    Bishop_labels = ['a2c4', 'c4a2', 'c0e2', 'e2c0', 'e2g4', 'g4e2', 'g0i2', 'i2g0',
-                     'a7c9', 'c9a7', 'c5e7', 'e7c5', 'e7g9', 'g9e7', 'g5i7', 'i7g5',
-                     'a2c0', 'c0a2', 'c4e2', 'e2c4', 'e2g0', 'g0e2', 'g4i2', 'i2g4',
-                     'a7c5', 'c5a7', 'c9e7', 'e7c9', 'e7g5', 'g5e7', 'g9i7', 'i7g9']
+    shi_labels = ['d7e8', 'e8d7', 'e8f9', 'f9e8', 'd0e1', 'e1d0', 'e1f2', 'f2e1',
+                  'd2e1', 'e1d2', 'e1f0', 'f0e1', 'd9e8', 'e8d9', 'e8f7', 'f7e8']
+    xiang_labels = ['a2c4', 'c4a2', 'c0e2', 'e2c0', 'e2g4', 'g4e2', 'g0i2', 'i2g0',
+                    'a7c9', 'c9a7', 'c5e7', 'e7c5', 'e7g9', 'g9e7', 'g5i7', 'i7g5',
+                    'a2c0', 'c0a2', 'c4e2', 'e2c4', 'e2g0', 'g0e2', 'g4i2', 'i2g4',
+                    'a7c5', 'c5a7', 'c9e7', 'e7c9', 'e7g5', 'g5e7', 'g9i7', 'i7g9']
 
     for l1 in range(9):
         for n1 in range(10):
@@ -56,11 +56,11 @@ def create_uci_labels():
                     dict_mv[move] = len(labels_array)
                     labels_array.append(move)
 
-    for p in Advisor_labels:
+    for p in shi_labels:
         dict_mv[p] = len(labels_array)
         labels_array.append(p)
 
-    for p in Bishop_labels:
+    for p in xiang_labels:
         dict_mv[p] = len(labels_array)
         labels_array.append(p)
 
@@ -70,8 +70,8 @@ def create_uci_labels():
 labels_mv = create_uci_labels()
 
 EMPTY = 0
-RED = 1  # BLACK
-BLACK = -1  # WHITE
+BLACK = 1  # 红
+WHITE = -1  # 黑
 
 PIECE_JIANG = 0
 PIECE_SHI = 1
@@ -155,7 +155,8 @@ def ma_pin(x1, y1, x2, y2):
 
 
 def is_inboard(x, y):
-    return x >= 0 and y >= 0 and x <= 8 and y <= 9
+    return 0 <= x <= 8 and 0 <= y <= 9
+    # return x >= 0 and y >= 0 and x <= 8 and y <= 9
 
 
 def is_injiugong(x, y):
@@ -175,7 +176,7 @@ def flip_xy(x, y):
 
 
 def sq_forward(y, player):
-    return y - 1 if player == RED else y + 1
+    return y - 1 if player == BLACK else y + 1
 
 
 def xiang_pin(x1, y1, x2, y2):
@@ -187,11 +188,11 @@ def xiang_pin(x1, y1, x2, y2):
 
 
 def is_self_half(y, player):
-    return y <= 4 if player == RED else y >= 5
+    return y >= 5 if player == BLACK else y <= 4
 
 
 def is_away_half(y, player):
-    return is_self_half(y, -player)
+    return y <= 4 if player == BLACK else y >= 5
 
 
 def is_same_half(y1, y2):
@@ -199,11 +200,11 @@ def is_same_half(y1, y2):
 
 
 def side_tag(player):
-    return 8 if player == RED else 16
+    return 8 if player == BLACK else 16
 
 
 def opp_side_tag(player):
-    return 16 if player == RED else 8
+    return 16 if player == BLACK else 8
 
 
 def is_self_chess(pc, player):
@@ -480,14 +481,14 @@ def is_jiang_exist(board, player):
 
 
 def board_to_input(board):
-    input = np.zeros(shape=(9, 10, 14))
+    input_arr = np.zeros(shape=(9, 10, 14))
     for i in range(9):
         for j in range(10):
             if board[i][j] != 0:
                 n = board[i][j] - 16 + 7 \
                     if board[i][j] >= 16 else board[i][j] - 8
-                input[i][j][n] = 1
-    return input
+                input_arr[i][j][n] = 1
+    return input_arr
 
 
 class ChineseChessEnv(BoardGameEnv):
@@ -500,7 +501,7 @@ class ChineseChessEnv(BoardGameEnv):
     def reset(self):
         # super().reset()
         self.board = init_board
-        self.player = RED
+        self.player = BLACK
         self.depth = 0
         return self.board, self.player
 
@@ -516,8 +517,8 @@ class ChineseChessEnv(BoardGameEnv):
         mvs = gen_moves(board, player)
         A = np.zeros((2086,), dtype=float)
         for mv in mvs:
-            str = mv_to_str(mv[0], mv[1], mv[2], mv[3])
-            A[dict_mv[str]] = 1
+            s = mv_to_str(mv[0], mv[1], mv[2], mv[3])
+            A[dict_mv[s]] = 1
         return A
 
     def has_valid(self, state):
