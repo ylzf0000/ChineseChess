@@ -63,6 +63,7 @@ class AlphaZeroAgent:
 
     def build_network(self, conv_filters, residual_filters, policy_filters,
                       learning_rate=0.001, regularizer=keras.regularizers.l2(1e-4)):
+        print(sys._getframe().f_code.co_name)
         # 公共部分
         inputs = keras.Input(shape=(9, 10, 14))
         x = keras.layers.Reshape((9, 10, 14))(inputs)
@@ -108,7 +109,6 @@ class AlphaZeroAgent:
         vs = keras.layers.Dense(1, activation=keras.activations.tanh,
                                 kernel_regularizer=regularizer,
                                 bias_regularizer=regularizer)(flattens)
-
         model = keras.Model(inputs=inputs, outputs=[probs, vs])
 
         def categorical_crossentropy_2d(y_true, y_pred):
@@ -140,13 +140,16 @@ class AlphaZeroAgent:
         self.step = 0
 
     def decide(self, observation, greedy=False, return_prob=False):
+        print(sys._getframe().f_code.co_name)
         # 计算策略
         board, player = observation
-        canonical_board = player * board
-        s = boardgame2.strfboard(canonical_board)
+        # canonical_board = player * board
+        # s = boardgame2.strfboard(canonical_board)
+        s = boardgame2.strfboard(board)
         while self.count[s].sum() < self.sim_count:  # 多次 MCTS 搜索
             self.step += 1
-            self.search(canonical_board, prior_noise=True)
+            # self.search(canonical_board, prior_noise=True)
+            self.search(board, player, prior_noise=True)
             self.step -= 1
         prob = self.count[s] / self.count[s].sum()
 
@@ -158,22 +161,24 @@ class AlphaZeroAgent:
         return location
 
     def learn(self, dfs):
+        print(sys._getframe().f_code.co_name)
         df = pd.concat(dfs).reset_index(drop=True)
         for batch in range(self.batches):
             indices = np.random.choice(len(df), size=self.batch_size)
             players, boards, probs, winners = (np.stack(
                 df.loc[indices, field]) for field in df.columns)
-            canonical_boards = players[:, np.newaxis, np.newaxis] * boards
+            # canonical_boards = players[:, np.newaxis, np.newaxis] * boards
+            canonical_boards = boards
             vs = (players * winners)[:, np.newaxis]
             self.net.fit(canonical_boards, [probs, vs], verbose=0)  # 训练
         self.reset_mcts()
 
-    def search(self, board, prior_noise=False):  # MCTS 搜索
-
-
+    def search(self, board, player, prior_noise=False):  # MCTS 搜索
+        print(sys._getframe().f_code.co_name, self.step)
         s = boardgame2.strfboard(board)
         if s not in self.winner:
-            self.winner[s] = self.env.get_winner((board, BLACK))  # 计算赢家
+            self.winner[s] = self.env.get_winner((board, player))  # 计算赢家
+            # self.winner[s] = self.env.get_winner((board, BLACK))  # 计算赢家
         if self.winner[s] is not None:  # 赢家确定的情况
             return self.winner[s]
         if self.step >= 100:
@@ -182,7 +187,8 @@ class AlphaZeroAgent:
             # pis, vs = self.net.predict(board[np.newaxis])
             pis, vs = self.net.predict(board_to_input(board)[np.newaxis])
             pi, v = pis[0], vs[0]
-            valid = self.env.get_valid((board, BLACK))
+            valid = self.env.get_valid((board, player))
+            # valid = self.env.get_valid((board, BLACK))
             masked_pi = pi * valid
             total_masked_pi = np.sum(masked_pi)
             if total_masked_pi <= 0:  # 所有的有效动作都没有概率，偶尔可能发生
@@ -213,10 +219,11 @@ class AlphaZeroAgent:
         # location = np.unravel_index(location_index, board.shape)
 
         (next_board, next_player), _, _, _ = self.env.next_step(
-            (board, BLACK), np.array(location))
-        next_canonical_board = next_player * next_board
+            (board, player), np.array(location))
+        # next_canonical_board = next_player * next_board
+        next_canonical_board = next_board
         self.step += 1
-        next_v = self.search(next_canonical_board)  # 递归搜索
+        next_v = self.search(next_canonical_board, -player)  # 递归搜索
         self.step -= 1
         v = next_player * next_v
         self.count[s][location] += 1
@@ -226,6 +233,7 @@ class AlphaZeroAgent:
 
 
 def self_play(env, agent, return_trajectory=False, verbose=False):
+    print(sys._getframe().f_code.co_name)
     if return_trajectory:
         trajectory = []
     observation = env.reset()
@@ -254,6 +262,7 @@ def self_play(env, agent, return_trajectory=False, verbose=False):
 
 
 def train():
+    print(sys._getframe().f_code.co_name)
     train_iterations = 700000  # 训练迭代次数
     train_episodes_per_iteration = 5000  # 每次迭代自我对弈回合数
     batches = 10  # 每回合进行几次批学习

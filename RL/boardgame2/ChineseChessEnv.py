@@ -1,5 +1,6 @@
 import copy
 import itertools
+import sys
 
 import numpy as np
 
@@ -223,6 +224,7 @@ def is_opp_chess(pc, player):
 
 
 def gen_moves(board, player):
+    print(sys._getframe().f_code.co_name)
     mvs = []
     self_tag, opp_tag = side_tag(player), opp_side_tag(player)
     for x in range(9):
@@ -323,6 +325,7 @@ def gen_moves(board, player):
 
 
 def is_legalmove(board, x1, y1, x2, y2, player):
+    print(sys._getframe().f_code.co_name)
     # 1.
     if not is_inboard(x1, y1) or not is_inboard(x2, y2):
         return False
@@ -379,6 +382,7 @@ def is_legalmove(board, x1, y1, x2, y2, player):
 
 
 def is_checked(board, player):
+    print(sys._getframe().f_code.co_name)
     self_tag = side_tag(player)
     opp_tag = opp_side_tag(player)
     src_x, src_y = 0, 0
@@ -510,11 +514,13 @@ class ChineseChessEnv(BoardGameEnv):
         return self.board, self.player
 
     def is_valid(self, state, action):
+        print(sys._getframe().f_code.co_name)
         board, player = state
         x1, x2, y1, y2 = str_to_mv(labels_mv[action[0]])
         return is_legalmove(board, x1, x2, y1, y2, player)
 
     def get_valid(self, state):
+        print(sys._getframe().f_code.co_name)
         board, player = state
         mvs = gen_moves(board, player)
         A = np.zeros((2086,), dtype=float)
@@ -524,9 +530,11 @@ class ChineseChessEnv(BoardGameEnv):
         return A
 
     def has_valid(self, state):
+        print(sys._getframe().f_code.co_name)
         return True
 
     def get_winner(self, state):
+        print(sys._getframe().f_code.co_name)
         board, player = state
         if is_mate(board, player):
             return -player
@@ -539,6 +547,7 @@ class ChineseChessEnv(BoardGameEnv):
         return None
 
     def get_next_state(self, state, action):
+        print(sys._getframe().f_code.co_name)
         board, player = state
         x1, x2, y1, y2 = str_to_mv(labels_mv[action[0]])
         move_piece(board, x1, x2, y1, y2)
