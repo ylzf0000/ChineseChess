@@ -148,6 +148,7 @@ class AlphaZeroAgent:
         while self.count[s].sum() < self.sim_count:  # 多次 MCTS 搜索
             if s in self.winner and self.winner[s] is not None:
                 break
+            # print('count_sum:', self.count[s].sum())
             self.step += 1
             self.search(canonical_board, player, prior_noise=True)
             self.step -= 1
@@ -218,6 +219,7 @@ class AlphaZeroAgent:
         ub = np.where(self.valid[s], self.q[s] + coef * prior, np.nan)
         location_index = np.nanargmax(ub)
         location = np.unravel_index(location_index, (self.prob_size,))
+        # print('location:', location)
         # location = np.unravel_index(location_index, board.shape)
 
         (next_board, next_player), _, _, _ = self.env.next_step(
@@ -265,15 +267,26 @@ def self_play(env, agent, return_trajectory=False, verbose=False):
 
 def train():
     print(sys._getframe().f_code.co_name)
-    train_iterations = 700000  # 训练迭代次数
-    train_episodes_per_iteration = 5000  # 每次迭代自我对弈回合数
-    batches = 10  # 每回合进行几次批学习
-    batch_size = 4096  # 批学习的批大小
-    sim_count = 800  # MCTS需要的计数
+    # train_iterations = 700000  # 训练迭代次数
+    # train_episodes_per_iteration = 5000  # 每次迭代自我对弈回合数
+    # batches = 10  # 每回合进行几次批学习
+    # batch_size = 4096  # 批学习的批大小
+    # sim_count = 100  # MCTS需要的计数
+    # net_kwargs = {}
+    # net_kwargs['conv_filters'] = [256, ]
+    # net_kwargs['residual_filters'] = [[256, 256], ]
+    # net_kwargs['policy_filters'] = [256, ]
+
+    train_iterations = 100
+    train_episodes_per_iteration = 100
+    batches = 2
+    batch_size = 64
+    sim_count = 200
     net_kwargs = {}
     net_kwargs['conv_filters'] = [256, ]
-    net_kwargs['residual_filters'] = [[256, 256], ] * 19
+    net_kwargs['residual_filters'] = [[256, 256], ]
     net_kwargs['policy_filters'] = [256, ]
+
     agent = AlphaZeroAgent(env=env, kwargs=net_kwargs, sim_count=sim_count,
                            batches=batches, batch_size=batch_size)
 
