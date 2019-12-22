@@ -143,13 +143,13 @@ class AlphaZeroAgent:
         print(sys._getframe().f_code.co_name)
         # 计算策略
         board, player = observation
-        # canonical_board = player * board
-        # s = boardgame2.strfboard(canonical_board)
-        s = boardgame2.strfboard(board)
+        canonical_board = np.array(board)
+        s = boardgame2.strfboard(canonical_board)
         while self.count[s].sum() < self.sim_count:  # 多次 MCTS 搜索
+            if s in self.winner and self.winner[s] is not None:
+                break
             self.step += 1
-            # self.search(canonical_board, prior_noise=True)
-            self.search(board, player, prior_noise=True)
+            self.search(canonical_board, player, prior_noise=True)
             self.step -= 1
         prob = self.count[s] / self.count[s].sum()
 
@@ -168,13 +168,15 @@ class AlphaZeroAgent:
             players, boards, probs, winners = (np.stack(
                 df.loc[indices, field]) for field in df.columns)
             # canonical_boards = players[:, np.newaxis, np.newaxis] * boards
-            canonical_boards = boards
+            canonical_boards = np.array(boards)
             vs = (players * winners)[:, np.newaxis]
             self.net.fit(canonical_boards, [probs, vs], verbose=0)  # 训练
         self.reset_mcts()
 
     def search(self, board, player, prior_noise=False):  # MCTS 搜索
         print(sys._getframe().f_code.co_name, self.step)
+        if self.step == 1:
+            print('?')
         s = boardgame2.strfboard(board)
         if s not in self.winner:
             self.winner[s] = self.env.get_winner((board, player))  # 计算赢家
@@ -221,7 +223,7 @@ class AlphaZeroAgent:
         (next_board, next_player), _, _, _ = self.env.next_step(
             (board, player), np.array(location))
         # next_canonical_board = next_player * next_board
-        next_canonical_board = next_board
+        next_canonical_board = np.array(next_board)
         self.step += 1
         next_v = self.search(next_canonical_board, -player)  # 递归搜索
         self.step -= 1
