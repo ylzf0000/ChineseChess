@@ -16,16 +16,7 @@ def strfboard(board):
 
 
 letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i']
-dict_letters = {'a': 0,
-                'b': 1,
-                'c': 2,
-                'd': 3,
-                'e': 4,
-                'f': 5,
-                'g': 6,
-                'h': 7,
-                'i': 8,
-                }
+dict_letters = {'a': 0, 'b': 1, 'c': 2, 'd': 3, 'e': 4, 'f': 5, 'g': 6, 'h': 7, 'i': 8, }
 numbers = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
 dict_numbers = {'0': 0, '1': 1, '2': 2, '3': 3, '4': 4,
                 '5': 5, '6': 6, '7': 7, '8': 8, '9': 9}
@@ -503,11 +494,11 @@ class ChineseChessEnv(BoardGameEnv):
 
     def __init__(self, board_shape=(9, 10), render_characters='+ox'):
         super().__init__(board_shape=board_shape,
-                         illegal_action_mode='resign', render_characters=render_characters,
+                         illegal_action_mode='pass', render_characters=render_characters,
                          allow_pass=False)
 
     def reset(self):
-        super().reset()
+        # super().reset()
         self.board = init_board
         self.player = RED
         self.depth = 0
@@ -549,6 +540,7 @@ class ChineseChessEnv(BoardGameEnv):
     def get_next_state(self, state, action):
         # print(sys._getframe().f_code.co_name)
         board, player = state
+        board = copy.deepcopy(board)
         x1, x2, y1, y2 = str_to_mv(labels_mv[action[0]])
         move_piece(board, x1, x2, y1, y2)
         self.depth += 1

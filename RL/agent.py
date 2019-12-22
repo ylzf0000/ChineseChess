@@ -145,6 +145,8 @@ class AlphaZeroAgent:
         board, player = observation
         canonical_board = np.array(board)
         s = boardgame2.strfboard(canonical_board)
+        if self.count[s][0] == 0:
+            self.count[s][0] = 1
         while self.count[s].sum() < self.sim_count:  # 多次 MCTS 搜索
             if s in self.winner and self.winner[s] is not None:
                 break
@@ -152,7 +154,9 @@ class AlphaZeroAgent:
             self.step += 1
             self.search(canonical_board, player, prior_noise=True)
             self.step -= 1
-        prob = self.count[s] / self.count[s].sum()
+        sum = self.count[s].sum()
+        # sum = sum if sum >= 1 else 1
+        prob = self.count[s] / sum
 
         # 采样
         location_index = np.random.choice(prob.size, p=prob.reshape(-1))
@@ -169,9 +173,14 @@ class AlphaZeroAgent:
             players, boards, probs, winners = (np.stack(
                 df.loc[indices, field]) for field in df.columns)
             # canonical_boards = players[:, np.newaxis, np.newaxis] * boards
-            canonical_boards = np.array(boards)
+            # canonical_boards = boards[:,np.newaxis]
             vs = (players * winners)[:, np.newaxis]
+            print('vs_shape:', vs.shape)
+
+            canonical_boards = np.array([board_to_input(board) for board in boards])
+            print('canonical_boards:',canonical_boards.shape)
             self.net.fit(canonical_boards, [probs, vs], verbose=0)  # 训练
+            # self.net.fit(canonical_boards, [probs, vs], verbose=0)  # 训练
         self.reset_mcts()
 
     def search(self, board, player, prior_noise=False):  # MCTS 搜索
@@ -247,7 +256,8 @@ def self_play(env, agent, return_trajectory=False, verbose=False):
         if verbose:
             print(boardgame2.strfboard(board))
             logging.info('第 {} 步：玩家 {}, 动作 {}'.format(step, player,
-                                                      action))
+                                                      ChineseChessEnv.labels_mv[action[0]]))
+
         observation, winner, done, _ = env.step(action)
         if return_trajectory:
             trajectory.append((player, board, prob))
