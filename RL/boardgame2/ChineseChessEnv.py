@@ -43,18 +43,19 @@ def create_uci_labels():
                     'a7c9', 'c9a7', 'c5e7', 'e7c5', 'e7g9', 'g9e7', 'g5i7', 'i7g5',
                     'a2c0', 'c0a2', 'c4e2', 'e2c4', 'e2g0', 'g0e2', 'g4i2', 'i2g4',
                     'a7c5', 'c5a7', 'c9e7', 'e7c9', 'e7g5', 'g5e7', 'g9i7', 'i7g9']
-
-    for l1 in range(9):
-        for n1 in range(10):
-            destinations = [(t, n1) for t in range(9)] + \
-                           [(l1, t) for t in range(10)] + \
-                           [(l1 + a, n1 + b) for (a, b) in
-                            [(-2, -1), (-1, -2), (-2, 1), (1, -2), (2, -1), (-1, 2), (2, 1), (1, 2)]]  # 马走日
-            for (l2, n2) in destinations:
-                if (l1, n1) != (l2, n2) and l2 in range(9) and n2 in range(10):
-                    move = letters[l1] + numbers[n1] + letters[l2] + numbers[n2]
-                    dict_mv[move] = len(labels_array)
-                    labels_array.append(move)
+    # move = letters[x1] + numbers[y1] + letters[x2] + numbers[y2]
+    for x1 in range(9):
+        for y1 in range(10):
+            dests = [(x2, y1) for x2 in range(9)] + \
+                           [(x1, y2) for y2 in range(10)] + \
+                           [(x1 + a, y1 + b) for (a, b) in
+                            [(-2, -1), (-1, -2), (-2, 1), (1, -2),
+                             (2, -1), (-1, 2), (2, 1), (1, 2)]]  # 马走日
+            for (x2, y2) in dests:
+                if (x1, y1) != (x2, y2) and x2 in range(9) and y2 in range(10):
+                    mv_str = mv_to_str(x1,y1,x2,y2)
+                    dict_mv[mv_str] = len(labels_array)
+                    labels_array.append(mv_str)
 
     for p in shi_labels:
         dict_mv[p] = len(labels_array)
@@ -68,7 +69,7 @@ def create_uci_labels():
 
 
 labels_mv = create_uci_labels()
-
+print('len_labels_mv: ',len(labels_mv))
 EMPTY = 0
 BLACK = 1  # 红
 WHITE = -1  # 黑

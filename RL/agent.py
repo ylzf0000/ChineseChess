@@ -66,7 +66,9 @@ class AlphaZeroAgent:
         print(sys._getframe().f_code.co_name)
         # 公共部分
         inputs = keras.Input(shape=(9, 10, 14))
-        x = keras.layers.Reshape((9, 10, 14))(inputs)
+        x = inputs
+        # inputs = keras.Input(shape=(9, 10, 14))
+        # x = keras.layers.Reshape((9, 10, 14))(inputs)
         # inputs = keras.Input(shape=self.board.shape)
         # x = keras.layers.Reshape(self.board.shape + (1,))(inputs)
         for conv_filter in conv_filters:
@@ -95,6 +97,8 @@ class AlphaZeroAgent:
         logits = keras.layers.Conv2D(1, 3, padding='same',
                                      kernel_regularizer=regularizer, bias_regularizer=regularizer)(x)
         flattens = keras.layers.Flatten()(logits)
+        # softmaxs = keras.layers.Softmax(input_shape=(self.prob_size,))(flattens)
+        # probs = keras.layers.Reshape(self.prob_size)(softmaxs)
         softmaxs = keras.layers.Softmax()(flattens)
         probs = keras.layers.Dense(self.prob_size)(softmaxs)
         # probs = keras.layers.Reshape(self.prob_size, )(softmaxs)
@@ -212,7 +216,7 @@ class AlphaZeroAgent:
 
         # PUCT 上界计算
         count_sum = self.count[s].sum()
-        coef = (self.c_init + np.log1p((1 + count_sum) / self.c_base)) * \
+        coef = (self.c_init + np.log1p(1. + (1. + count_sum) / self.c_base)) * \
                math.sqrt(count_sum) / (1. + self.count[s])
         if prior_noise:  # 先验噪声
             alpha = 1. / self.valid[s].sum()
@@ -225,8 +229,11 @@ class AlphaZeroAgent:
                     self.prior_exploration_fraction * noise
         else:
             prior = self.policy[s]
+        # np.where(condition, x, y) 返回与condition一样大的np.array
         ub = np.where(self.valid[s], self.q[s] + coef * prior, np.nan)
+        # 获得除了nan的最大值的索引
         location_index = np.nanargmax(ub)
+        # 把location_index在(self.prob_size,)中解开得到的索引位置
         location = np.unravel_index(location_index, (self.prob_size,))
         # print('location:', location)
         # location = np.unravel_index(location_index, board.shape)
